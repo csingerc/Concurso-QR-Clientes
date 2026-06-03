@@ -3,69 +3,52 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Ranking · La Ruta del Salmón</title>
+<title>La Ruta del Salmón · South Wind</title>
+<meta name="description" content="5 días, 3 niveles, todo sobre el salmón que comes. Un quiz de inocuidad de South Wind."/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="css/design.css"/>
 <style>
-.page-header{text-align:center;padding:8px 0 18px;}
-.page-header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,7vw,40px);font-weight:700;font-style:italic;margin-top:6px;}
-.page-meta{font-size:13px;color:var(--cream-dim);margin-top:5px;}
-.tabs{display:flex;gap:7px;margin-bottom:18px;}
-.tab-btn{flex:1;border-radius:10px;padding:10px 4px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border:1.5px solid;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
-.tab-btn.facil  {border-color:rgba(0,180,100,0.15);color:rgba(61,214,140,0.45);background:transparent;}
-.tab-btn.medio  {border-color:rgba(200,168,75,0.15);color:rgba(200,168,75,0.45);background:transparent;}
-.tab-btn.experto{border-color:rgba(130,80,240,0.15);color:rgba(167,139,250,0.45);background:transparent;}
-.tab-btn.active.facil  {border-color:rgba(0,180,100,0.4);color:#3dd68c;background:rgba(0,180,100,0.07);}
-.tab-btn.active.medio  {border-color:var(--gold-line);color:var(--gold);background:var(--gold-dim);}
-.tab-btn.active.experto{border-color:rgba(130,80,240,0.35);color:#a78bfa;background:rgba(130,80,240,0.07);}
-.podio{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:8px;align-items:end;margin-bottom:16px;}
-.pi{border-radius:var(--radius);padding:14px 8px 12px;text-align:center;background:var(--surface);}
-.pi.p1{border:1px solid var(--gold-line);background:var(--surface2);padding-top:20px;}
-.pi.p2{border:1px solid var(--border-md);}
-.pi.p3{border:1px solid var(--border);}
-.pi-crown{font-size:18px;margin-bottom:4px;}
-.pi-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;line-height:1.2;margin-bottom:4px;word-break:break-word;}
-.p1 .pi-name{color:var(--gold);font-size:15px;}
-.p2 .pi-name{color:rgba(240,236,228,0.7);}
-.p3 .pi-name{color:rgba(240,236,228,0.5);}
-.pi-pts{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
-.p1 .pi-pts{font-size:20px;color:var(--gold);}
-.p2 .pi-pts{color:rgba(240,236,228,0.6);}
-.p3 .pi-pts{color:rgba(240,236,228,0.4);}
-.pi-dias{font-size:10px;color:var(--cream-dim);margin-top:2px;}
-.rlist{display:flex;flex-direction:column;gap:6px;}
-.ri{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:11px;}
-.ri.yo{border-color:var(--gold-line);background:var(--surface2);}
-.ri-pos{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--cream-dim);width:24px;text-align:center;flex-shrink:0;}
-.ri-av{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:12px;color:var(--gold);font-weight:700;flex-shrink:0;}
-.ri-info{flex:1;min-width:0;}
-.ri-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ri-detail{font-size:11px;color:var(--cream-dim);margin-top:1px;}
-.ri-score{text-align:right;flex-shrink:0;}
-.ri-pts{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--gold);}
-.ri-ptsl{font-size:10px;color:var(--cream-dim);}
-.empty{text-align:center;padding:32px 0;color:var(--cream-dim);font-size:14px;}
-.refresh-note{text-align:center;font-size:11px;color:rgba(154,164,184,0.35);margin-top:12px;}
-.btn-back-p{display:block;margin:14px auto 0;background:none;border:1px solid var(--border-md);border-radius:var(--radius);color:var(--cream-dim);font-family:'Barlow',sans-serif;font-size:13px;padding:9px 20px;cursor:pointer;}
+.demo-link { text-align:center; margin-top:14px; }
+.already-name {
+  background:var(--gold-dim); border:1.5px solid var(--gold-line);
+  border-radius:var(--radius); padding:16px; text-align:center; margin-bottom:16px;
+}
+.already-name .an-label { font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px; }
+.already-name .an-val { font-family:'Playfair Display',serif;font-size:22px;font-style:italic; }
 </style>
 </head>
 <body>
-<div class="page-shell"><div class="container container-wide">
-  <div class="page-header fade-in">
-    <div class="live-pill"><span class="live-dot"></span> En vivo</div>
-    <h1>Ranking</h1>
-    <div class="page-meta" id="pageMeta">Cargando...</div>
+<div class="page-shell"><div class="container">
+
+  <div class="brand-header fade-in">
+    <div class="brand-eyebrow">South Wind · Calidad &amp; Inocuidad</div>
+    <h1 class="brand-title">La Ruta<br><em>del Salmón</em></h1>
+    <p class="brand-subtitle">5 días · 3 niveles<br>¿Cuánto sabes sobre el salmón que comes?</p>
   </div>
-  <div class="tabs fade-in-1">
-    <button class="tab-btn facil active" onclick="setTab('facil')">🌱 Fácil</button>
-    <button class="tab-btn medio" onclick="setTab('medio')">🔥 Medio</button>
-    <button class="tab-btn experto" onclick="setTab('experto')">🧬 Experto</button>
+
+  <div class="gold-rule fade-in-1"><span class="gold-rule-dot"></span></div>
+
+  <div class="card card-accent fade-in-2" id="loginCard">
+    <div class="card-label">Crea tu perfil para jugar</div>
+    <div id="loginForm">
+      <div class="input-group">
+        <label for="inputNombre">Tu nombre</label>
+        <input type="text" id="inputNombre" placeholder="Como quieres aparecer en el ranking" maxlength="40" autocomplete="name"/>
+      </div>
+      <div class="input-group">
+        <label for="inputEmail">Tu email</label>
+        <input type="email" id="inputEmail" placeholder="para guardar tu progreso entre días" autocomplete="email"/>
+        <div class="input-hint">Solo usamos tu email para guardar tu avance. No recibirás publicidad.</div>
+      </div>
+      <button class="btn-primary" onclick="entrar()">Comenzar la ruta →</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+    <div class="demo-link">
+      <button class="btn-ghost" onclick="entrarDemo()">Explorar sin guardar progreso</button>
+    </div>
   </div>
-  <div class="podio fade-in-2" id="podio"></div>
-  <div class="rlist fade-in-3" id="rlist"><div class="empty"><div class="spinner"></div></div></div>
-  <div class="refresh-note" id="refreshNote"></div>
-  <button class="btn-back-p" onclick="window.location.href='home.html'">← Volver al inicio</button>
-  <footer class="site-footer">
+
+  <footer class="site-footer fade-in-3">
     
     <div class="footer-brand">South Wind</div>
     <div class="footer-links">
@@ -73,51 +56,43 @@
       <span class="footer-sep">·</span>
       <a href="https://www.instagram.com/southwindoficial/" target="_blank" rel="noopener">📸 @southwindoficial</a>
     </div>
+    <div class="footer-copy">7 de junio · Día Mundial de la Inocuidad Alimentaria 🌍</div>
   </footer>
+
 </div>
 <script src="js/config.js"></script>
 <script>
-let sbClient,tab='facil',idYo=null;
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let sbClient;
 function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
-function setTab(n){tab=n;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.classList.contains(n)));cargar();}
-function inic(n){return n.split(' ').slice(0,2).map(p=>p[0]?.toUpperCase()||'').join('');}
-async function cargar(){
-  if(!sbClient)return;
+function getU(){try{return JSON.parse(sessionStorage.getItem('sw2_usuario'));}catch{return null;}}
+function setU(u){sessionStorage.setItem('sw2_usuario',JSON.stringify(u));}
+function err(m){const e=document.getElementById('errorMsg');e.textContent=m;e.style.display='block';}
+function okEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+async function entrar(){
+  document.getElementById('errorMsg').style.display='none';
+  const n=document.getElementById('inputNombre').value.trim();
+  const e=document.getElementById('inputEmail').value.trim().toLowerCase();
+  if(!n){err('Ingresa tu nombre para aparecer en el ranking.');return;}
+  if(!okEmail(e)){err('Ingresa un email válido para guardar tu progreso.');return;}
+  const btn=document.querySelector('.btn-primary');btn.textContent='...';btn.disabled=true;
   try{
-    const{data,error}=await sbClient.from('qrhunt2_progreso').select('puntaje,dia,qrhunt2_participantes(id,nombre)').eq('nivel',tab);
+    const{data,error}=await sbClient.rpc('qrhunt2_registrar',{p_email:e,p_nombre:n});
     if(error)throw error;
-    const map={};
-    (data||[]).forEach(r=>{const p=r.qrhunt2_participantes;if(!p)return;const id=p.id,nom=p.nombre||'Anónimo';if(!map[id])map[id]={id,nombre:nom,puntaje:0,dias:0};map[id].puntaje+=r.puntaje;map[id].dias++;});
-    const lista=Object.values(map).sort((a,b)=>b.puntaje-a.puntaje);
-    // sufijo del id solo cuando dos participantes distintos comparten nombre
-    const cnt={};lista.forEach(it=>{cnt[it.nombre]=(cnt[it.nombre]||0)+1;});
-    lista.forEach(it=>{it.display=cnt[it.nombre]>1?it.nombre+' #'+String(it.id).replace(/-/g,'').slice(0,3):it.nombre;});
-    document.getElementById('pageMeta').textContent=lista.length+' participantes · Nivel '+tab;
-    document.getElementById('refreshNote').textContent='Actualizado: '+new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · refresca cada 15s';
-    renderPodio(lista.slice(0,3));renderLista(lista.slice(3));
-  }catch(e){console.error(e);}
+    setU({email:e,nombre:n,id:data});window.location.href='home.html';
+  }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
 }
-function renderPodio(t){
-  const el=document.getElementById('podio');if(!t.length){el.innerHTML='';return;}
-  const ord=[t[1]||null,t[0]||null,t[2]||null],cl=['p2','p1','p3'],cr=['🥈','🥇','🥉'];
-  el.innerHTML=ord.map((it,vi)=>{
-    if(!it)return'<div class="pi '+cl[vi]+'"></div>';
-    const yo=it.id===idYo;
-    return'<div class="pi '+cl[vi]+'"><div class="pi-crown">'+cr[vi]+'</div><div class="pi-name">'+esc(it.display)+(yo?' 👈':'')+'</div><div class="pi-pts">'+it.puntaje+'</div><div class="pi-dias">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div>';
-  }).join('');
-}
-function renderLista(items){
-  const el=document.getElementById('rlist');if(!items.length){el.innerHTML='';return;}
-  el.innerHTML=items.map((it,i)=>{
-    const yo=it.id===idYo;
-    return'<div class="ri'+(yo?' yo':'')+'"><div class="ri-pos">'+(i+4)+'°</div><div class="ri-av">'+esc(inic(it.nombre))+'</div><div class="ri-info"><div class="ri-name">'+esc(it.display)+(yo?' 👈':'')+'</div><div class="ri-detail">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div><div class="ri-score"><div class="ri-pts">'+it.puntaje+'</div><div class="ri-ptsl">pts</div></div></div>';
-  }).join('');
-}
+function entrarDemo(){setU({email:CONFIG.emailDemo,nombre:'Explorador'});window.location.href='home.html';}
 document.addEventListener('DOMContentLoaded',()=>{
   initSb();
-  try{idYo=JSON.parse(sessionStorage.getItem('sw2_usuario'))?.id||null;}catch{}
-  cargar();setInterval(cargar,CONFIG.rankingRefreshMs);
+  const u=getU();
+  if(u){
+    document.getElementById('loginCard').innerHTML=`
+      <div class="card-label">Ya tienes sesión activa</div>
+      <div class="already-name"><div class="an-label">Jugando como</div><div class="an-val">${u.nombre}</div></div>
+      <button class="btn-primary" onclick="window.location.href='home.html'">Continuar la ruta →</button>
+      <button class="btn-secondary" onclick="sessionStorage.removeItem('sw2_usuario');location.reload()">Cambiar usuario</button>`;
+  }
+  ['inputNombre','inputEmail'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')entrar();}));
 });
 </script>
 </div></body>

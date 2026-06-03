@@ -1,99 +1,89 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>La Ruta del Salmón · South Wind</title>
-<meta name="description" content="5 días, 3 niveles, todo sobre el salmón que comes. Un quiz de inocuidad de South Wind."/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="css/design.css"/>
-<style>
-.demo-link { text-align:center; margin-top:14px; }
-.already-name {
-  background:var(--gold-dim); border:1.5px solid var(--gold-line);
-  border-radius:var(--radius); padding:16px; text-align:center; margin-bottom:16px;
+// ============================================================
+// CONFIGURACIÓN CENTRAL — South Wind Quiz v2.0
+// ============================================================
+
+const CONFIG = {
+
+  supabase: {
+    url: 'https://ocdrbbnecotziesnclvf.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHJiYm5lY290emllc25jbHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDc5MjEsImV4cCI6MjA5NDc4MzkyMX0.KDeiI7sHhzb20Tm4ICXBNumiOVsI9gDEBlW5G3MNMSU',
+  },
+
+  // ── FECHA DE LANZAMIENTO ─────────────────────────────────
+  // Cambiar esta fecha para ajustar el calendario de desbloqueo
+  // Formato: 'YYYY-MM-DD' en hora de Chile (America/Santiago)
+  fechaDia1: '2026-06-03',
+
+  // ── MODO DEMO ────────────────────────────────────────────
+  emailDemo: 'demo@southwind.cl',
+
+  // ── NIVELES ──────────────────────────────────────────────
+  niveles: ['facil', 'medio', 'experto'],
+
+  nivelesLabels: {
+    facil:   { label: 'Fácil',   emoji: '🌱', color: '#00c896' },
+    medio:   { label: 'Medio',   emoji: '🔥', color: '#f59e0b' },
+    experto: { label: 'Experto', emoji: '🧬', color: '#8b5cf6' },
+  },
+
+  // Día 5 no tiene nivel fácil
+  nivelesDisponibles: {
+    1: ['facil', 'medio', 'experto'],
+    2: ['facil', 'medio', 'experto'],
+    3: ['facil', 'medio', 'experto'],
+    4: ['facil', 'medio', 'experto'],
+    5: ['medio', 'experto'],
+  },
+
+  // ── PUNTOS ───────────────────────────────────────────────
+  puntos: { 1: 10, 2: 25, 3: 45 },
+  bonusNivel: { facil: 0, medio: 10, experto: 25 }, // bonus por nivel de dificultad
+  bonusCompletarDia: 15, // bonus por completar los 3 niveles de un día
+
+  // ── TIEMPO ───────────────────────────────────────────────
+  tiempoMaxSegundos: 120,
+  tiempoMultiplicador: [
+    { hasta: 30,       factor: 1.0  },
+    { hasta: 60,       factor: 0.85 },
+    { hasta: 120,      factor: 0.65 },
+    { hasta: Infinity, factor: 0.4  },
+  ],
+
+  rankingRefreshMs: 15000,
+  totalDias: 5,
+};
+
+// ── HELPERS ──────────────────────────────────────────────────
+
+function getDiaActual() {
+  const tz = 'America/Santiago';
+  const ahora = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+  const inicio = new Date(new Date(CONFIG.fechaDia1 + 'T00:00:00').toLocaleString('en-US', { timeZone: tz }));
+  const diffMs = ahora - inicio;
+  const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  return Math.min(Math.max(diffDias + 1, 0), CONFIG.totalDias + 1);
 }
-.already-name .an-label { font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px; }
-.already-name .an-val { font-family:'Playfair Display',serif;font-size:22px;font-style:italic; }
-</style>
-</head>
-<body>
-<div class="page-shell"><div class="container">
 
-  <div class="brand-header fade-in">
-    <div class="brand-eyebrow">South Wind · Calidad &amp; Inocuidad</div>
-    <h1 class="brand-title">La Ruta<br><em>del Salmón</em></h1>
-    <p class="brand-subtitle">5 días · 3 niveles<br>¿Cuánto sabes sobre el salmón que comes?</p>
-  </div>
-
-  <div class="gold-rule fade-in-1"><span class="gold-rule-dot"></span></div>
-
-  <div class="card card-accent fade-in-2" id="loginCard">
-    <div class="card-label">Crea tu perfil para jugar</div>
-    <div id="loginForm">
-      <div class="input-group">
-        <label for="inputNombre">Tu nombre</label>
-        <input type="text" id="inputNombre" placeholder="Como quieres aparecer en el ranking" maxlength="40" autocomplete="name"/>
-      </div>
-      <div class="input-group">
-        <label for="inputEmail">Tu email</label>
-        <input type="email" id="inputEmail" placeholder="para guardar tu progreso entre días" autocomplete="email"/>
-        <div class="input-hint">Solo usamos tu email para guardar tu avance. No recibirás publicidad.</div>
-      </div>
-      <button class="btn-primary" onclick="entrar()">Comenzar la ruta →</button>
-      <div class="error-msg" id="errorMsg"></div>
-    </div>
-    <div class="demo-link">
-      <button class="btn-ghost" onclick="entrarDemo()">Explorar sin guardar progreso</button>
-    </div>
-  </div>
-
-  <footer class="site-footer fade-in-3">
-    
-    <div class="footer-brand">South Wind</div>
-    <div class="footer-links">
-      <a href="https://www.southwind.cl" target="_blank" rel="noopener">🌐 southwind.cl</a>
-      <span class="footer-sep">·</span>
-      <a href="https://www.instagram.com/southwindoficial/" target="_blank" rel="noopener">📸 @southwindoficial</a>
-    </div>
-    <div class="footer-copy">7 de junio · Día Mundial de la Inocuidad Alimentaria 🌍</div>
-  </footer>
-
-</div>
-<script src="js/config.js"></script>
-<script>
-let sbClient;
-function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
-function getU(){try{return JSON.parse(sessionStorage.getItem('sw2_usuario'));}catch{return null;}}
-function setU(u){sessionStorage.setItem('sw2_usuario',JSON.stringify(u));}
-function err(m){const e=document.getElementById('errorMsg');e.textContent=m;e.style.display='block';}
-function okEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
-async function entrar(){
-  document.getElementById('errorMsg').style.display='none';
-  const n=document.getElementById('inputNombre').value.trim();
-  const e=document.getElementById('inputEmail').value.trim().toLowerCase();
-  if(!n){err('Ingresa tu nombre para aparecer en el ranking.');return;}
-  if(!okEmail(e)){err('Ingresa un email válido para guardar tu progreso.');return;}
-  const btn=document.querySelector('.btn-primary');btn.textContent='...';btn.disabled=true;
-  try{
-    const{data,error}=await sbClient.from('qrhunt2_participantes').upsert({email:e,nombre:n,updated_at:new Date().toISOString()},{onConflict:'email'}).select('id').single();
-    if(error)throw error;
-    setU({email:e,nombre:n,id:data?.id});window.location.href='home.html';
-  }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
+function isDiaDesbloqueado(dia) {
+  return getDiaActual() >= dia;
 }
-function entrarDemo(){setU({email:CONFIG.emailDemo,nombre:'Explorador'});window.location.href='home.html';}
-document.addEventListener('DOMContentLoaded',()=>{
-  initSb();
-  const u=getU();
-  if(u){
-    document.getElementById('loginCard').innerHTML=`
-      <div class="card-label">Ya tienes sesión activa</div>
-      <div class="already-name"><div class="an-label">Jugando como</div><div class="an-val">${u.nombre}</div></div>
-      <button class="btn-primary" onclick="window.location.href='home.html'">Continuar la ruta →</button>
-      <button class="btn-secondary" onclick="sessionStorage.removeItem('sw2_usuario');location.reload()">Cambiar usuario</button>`;
+
+function calcularMultiplicador(segundos) {
+  for (const t of CONFIG.tiempoMultiplicador) {
+    if (segundos <= t.hasta) return t.factor;
   }
-  ['inputNombre','inputEmail'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')entrar();}));
-});
-</script>
-</div></body>
-</html>
+  return 0.4;
+}
+
+function calcularPuntajeFinal(correctas, nivel, tiemposPorPregunta) {
+  const base = CONFIG.puntos[correctas] || 0;
+  const bonus = CONFIG.bonusNivel[nivel] || 0;
+  const factorPromedio = tiemposPorPregunta.length > 0
+    ? tiemposPorPregunta.reduce((s, t) => s + calcularMultiplicador(t), 0) / tiemposPorPregunta.length
+    : 1;
+  return Math.round((base + bonus) * factorPromedio);
+}
+
+function esDemo(email) {
+  return email === CONFIG.emailDemo;
+}
