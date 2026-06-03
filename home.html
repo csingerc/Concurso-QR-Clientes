@@ -7,75 +7,73 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="css/design.css"/>
 <style>
-/* Top bar */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
-.topbar-brand{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--gold-500);}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.topbar-brand{display:flex;align-items:center;gap:8px;color:var(--cream);}
+.topbar-brand svg{width:22px;height:22px;opacity:0.7;}
+.topbar-name{font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:var(--cream-dim);}
 .topbar-right{display:flex;align-items:center;gap:8px;}
-.user-chip{font-size:13px;font-weight:600;color:var(--cream);}
-.btn-salir{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Barlow',sans-serif;}
+.user-chip{font-size:13px;font-weight:600;}
+.btn-salir{background:none;border:1px solid var(--border-md);border-radius:8px;color:var(--cream-dim);font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Barlow',sans-serif;}
 
-/* Hero puntaje */
-.pts-hero{background:linear-gradient(145deg,rgba(12,28,51,0.95),rgba(18,40,76,0.8));border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:22px;margin-bottom:22px;box-shadow:0 0 40px rgba(200,168,75,0.05);}
-.pts-hero-top{display:flex;justify-content:space-between;align-items:flex-start;}
-.pts-label{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-500);margin-bottom:5px;}
-.pts-value{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;color:var(--gold-500);line-height:1;}
-.pts-sub{font-size:12px;color:var(--text-muted);margin-top:3px;}
-.btn-ranking{background:rgba(200,168,75,0.1);border:1px solid var(--gold-border);border-radius:10px;color:var(--gold-500);font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;white-space:nowrap;}
+.pts-hero{background:var(--surface2);border:1px solid var(--gold-line);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;}
+.pts-hero-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.pts-label{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.pts-value{font-family:'Playfair Display',serif;font-size:46px;font-weight:700;color:var(--gold);line-height:1;}
+.pts-sub{font-size:12px;color:var(--cream-dim);margin-top:2px;}
+.btn-ranking{background:var(--gold-dim);border:1px solid var(--gold-line);border-radius:10px;color:var(--gold);font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;white-space:nowrap;}
 
-/* Sección días */
-.section-label{font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;}
+.section-label{font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--cream-dim);margin-bottom:12px;}
 
-/* Card día desbloqueado */
-.dia-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 18px 16px;margin-bottom:12px;backdrop-filter:blur(12px);}
-.dia-card.hoy{border-color:var(--gold-border);box-shadow:0 0 28px rgba(200,168,75,0.07);}
+/* Día desbloqueado */
+.dia-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:10px;}
+.dia-card.hoy{border-color:var(--gold-line);background:var(--surface2);}
+.dia-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.dia-num{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--cream-dim);}
+.hoy-badge{background:var(--gold);color:var(--bg);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+.dia-titulo{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:2px;line-height:1.2;}
+.dia-sub{font-size:12px;color:var(--cream-dim);margin-bottom:14px;}
 
-.dia-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-.dia-num{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);}
-.hoy-badge{background:var(--gold-500);color:var(--navy-900);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
-
-.dia-titulo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1.15;margin-bottom:3px;}
-.dia-sub{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
-
-/* Niveles */
 .niveles-row{display:flex;gap:7px;}
-.nivel-btn{flex:1;border-radius:10px;padding:10px 5px;text-align:center;cursor:pointer;border:1.5px solid;font-family:'Barlow',sans-serif;transition:opacity 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent;}
+.nivel-btn{flex:1;border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer;border:1.5px solid;font-family:'Barlow',sans-serif;transition:transform 0.1s;-webkit-tap-highlight-color:transparent;}
 .nivel-btn:active{transform:scale(0.97);}
-.nivel-btn .nb-e{font-size:17px;display:block;margin-bottom:2px;}
-.nivel-btn .nb-l{font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
-.nivel-btn .nb-s{font-size:10px;margin-top:2px;opacity:0.8;}
-.nivel-btn.facil  {background:rgba(0,180,120,0.07);border-color:rgba(0,180,120,0.25);color:#00c896;}
-.nivel-btn.medio  {background:rgba(200,168,75,0.07);border-color:rgba(200,168,75,0.25);color:var(--gold-500);}
-.nivel-btn.experto{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.25);color:#8b5cf6;}
-.nivel-btn.done{opacity:0.55;}
+.nb-e{font-size:16px;display:block;margin-bottom:2px;}
+.nb-l{font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;display:block;}
+.nb-s{font-size:10px;margin-top:2px;display:block;opacity:0.8;}
+.nivel-btn.facil  {background:rgba(0,180,100,0.07);border-color:rgba(0,180,100,0.2);color:#3dd68c;}
+.nivel-btn.medio  {background:var(--gold-dim);border-color:var(--gold-line);color:var(--gold);}
+.nivel-btn.experto{background:rgba(130,80,240,0.07);border-color:rgba(130,80,240,0.2);color:#a78bfa;}
+.nivel-btn.done{opacity:0.5;}
 .nivel-btn.done .nb-l{text-decoration:line-through;}
 
-/* Card día bloqueado — colapsada, genera misterio */
+/* Día bloqueado — colapsado */
 .dia-locked{
-  border:1px dashed rgba(200,168,75,0.15);
-  border-radius:var(--radius-lg); padding:14px 18px;
-  margin-bottom:12px; display:flex; align-items:center;
-  justify-content:space-between; gap:12px;
-  background:rgba(7,16,30,0.4);
+  border:1px dashed rgba(240,236,228,0.08);
+  border-radius:var(--radius-lg); padding:13px 18px;
+  margin-bottom:10px; display:flex;
+  align-items:center; justify-content:space-between;
+  background:rgba(8,14,26,0.4);
 }
-.locked-left .locked-day{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);}
-.locked-left .locked-date{font-size:12px;color:rgba(138,144,176,0.5);margin-top:2px;}
-.locked-icon{font-size:18px;opacity:0.25;}
+.locked-day{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:rgba(154,164,184,0.45);}
+.locked-date{font-size:12px;color:rgba(154,164,184,0.3);margin-top:2px;}
+.locked-icon{font-size:16px;opacity:0.18;}
 </style>
 </head>
 <body>
 <div class="container">
 
   <div class="topbar fade-in">
-    <div class="topbar-brand">La Ruta del Salmón</div>
+    <div class="topbar-brand">
+      <div style="color:var(--cream);width:22px;height:22px;"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1.5"/><path d="M50 6 L55 44 L50 50 L45 44 Z" fill="currentColor"/><path d="M50 94 L55 56 L50 50 L45 56 Z" fill="currentColor" opacity="0.35"/><path d="M6 50 L44 45 L50 50 L44 55 Z" fill="currentColor" opacity="0.35"/><path d="M94 50 L56 45 L50 50 L56 55 Z" fill="currentColor" opacity="0.35"/><circle cx="50" cy="50" r="3.5" fill="currentColor"/><circle cx="50" cy="50" r="1.8" fill="#080e1a"/></svg></div>
+      <span class="topbar-name">La Ruta del Salmón</span>
+    </div>
     <div class="topbar-right">
-      <div class="user-chip" id="userName">...</div>
+      <span class="user-chip" id="userName">...</span>
       <button class="btn-salir" onclick="salir()">Salir</button>
     </div>
   </div>
 
-  <!-- Puntaje hero -->
   <div class="pts-hero fade-in-1">
-    <div class="pts-hero-top">
+    <div class="pts-hero-row">
       <div>
         <div class="pts-label">Tu puntaje total</div>
         <div class="pts-value" id="ptsTotal">0</div>
@@ -85,15 +83,13 @@
     </div>
   </div>
 
-  <!-- Días -->
   <div class="section-label fade-in-2">Elige tu desafío</div>
   <div id="diasContainer" class="fade-in-3">
     <div style="text-align:center;padding:40px 0;"><div class="spinner"></div></div>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer">
-    <div class="footer-compass">🧭</div>
+    <div class="footer-logo" style="color:var(--cream);"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1.5"/><path d="M50 6 L55 44 L50 50 L45 44 Z" fill="currentColor"/><path d="M50 94 L55 56 L50 50 L45 56 Z" fill="currentColor" opacity="0.35"/><path d="M6 50 L44 45 L50 50 L44 55 Z" fill="currentColor" opacity="0.35"/><path d="M94 50 L56 45 L50 50 L56 55 Z" fill="currentColor" opacity="0.35"/><circle cx="50" cy="50" r="3.5" fill="currentColor"/><circle cx="50" cy="50" r="1.8" fill="#080e1a"/></svg></div>
     <div class="footer-brand">South Wind</div>
     <div class="footer-links">
       <a href="https://www.southwind.cl" target="_blank" rel="noopener">🌐 southwind.cl</a>
@@ -104,117 +100,71 @@
   </footer>
 
 </div>
-
 <script src="js/config.js"></script>
 <script src="js/preguntas.js"></script>
 <script>
-let sbClient, usuario, progreso = {};
-
-function initSupabase() {
-  if (window.supabase?.createClient)
-    sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
+let sbClient,usuario,progreso={};
+function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
+function getU(){try{return JSON.parse(sessionStorage.getItem('sw2_usuario'));}catch{return null;}}
+function salir(){sessionStorage.removeItem('sw2_usuario');window.location.href='index.html';}
+function esDemo(){return usuario?.email===CONFIG.emailDemo;}
+function getFecha(off){
+  const d=new Date(CONFIG.fechaDia1+'T12:00:00');
+  d.setDate(d.getDate()+off);
+  return d.toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
 }
-function getUsuario() { try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; } }
-function salir() { sessionStorage.removeItem('sw2_usuario'); window.location.href = 'index.html'; }
-function esDemo() { return usuario?.email === CONFIG.emailDemo; }
-
-function getFechaLabel(offsetDias) {
-  const d = new Date(CONFIG.fechaDia1 + 'T12:00:00');
-  d.setDate(d.getDate() + offsetDias);
-  return d.toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long' });
+async function cargarProgreso(){
+  if(!sbClient||esDemo())return;
+  try{
+    const{data}=await sbClient.from('qrhunt2_progreso').select('dia,nivel,puntaje').eq('email',usuario.email);
+    let tot=0;
+    (data||[]).forEach(r=>{if(!progreso[r.dia])progreso[r.dia]={};progreso[r.dia][r.nivel]=r.puntaje;tot+=r.puntaje;});
+    animN('ptsTotal',0,tot,600);
+  }catch(e){console.error(e);}
 }
-
-async function cargarProgreso() {
-  if (!sbClient || esDemo()) return;
-  try {
-    const { data } = await sbClient.from('qrhunt2_progreso')
-      .select('dia, nivel, puntaje').eq('email', usuario.email);
-    let total = 0;
-    (data||[]).forEach(r => {
-      if (!progreso[r.dia]) progreso[r.dia] = {};
-      progreso[r.dia][r.nivel] = r.puntaje;
-      total += r.puntaje;
-    });
-    animarNum('ptsTotal', 0, total, 600);
-  } catch(e) { console.error(e); }
+function animN(id,a,b,dur){
+  const el=document.getElementById(id);if(!el)return;
+  const t0=performance.now();
+  (function s(t){const p=Math.min((t-t0)/dur,1),e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(a+(b-a)*e);if(p<1)requestAnimationFrame(s);})(t0);
 }
-
-function animarNum(id, desde, hasta, dur) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const t0 = performance.now();
-  (function step(t) {
-    const p = Math.min((t-t0)/dur, 1), e = 1-Math.pow(1-p,3);
-    el.textContent = Math.round(desde + (hasta-desde)*e);
-    if (p < 1) requestAnimationFrame(step);
-  })(t0);
-}
-
-function renderDias() {
-  const hoy = getDiaActual();
-  const c = document.getElementById('diasContainer');
-  c.innerHTML = '';
-
-  for (let dia = 1; dia <= CONFIG.totalDias; dia++) {
-    const desbloqueado = isDiaDesbloqueado(dia);
-    const esHoy = dia === hoy;
-
-    if (!desbloqueado) {
-      // Card colapsada — solo día y fecha, genera misterio
-      const el = document.createElement('div');
-      el.className = 'dia-locked';
-      el.innerHTML = `
-        <div class="locked-left">
-          <div class="locked-day">Día ${dia}</div>
-          <div class="locked-date">${getFechaLabel(dia-1)}</div>
-        </div>
-        <div class="locked-icon">🔒</div>`;
-      c.appendChild(el);
-      continue;
+function renderDias(){
+  const hoy=getDiaActual(),c=document.getElementById('diasContainer');c.innerHTML='';
+  for(let dia=1;dia<=CONFIG.totalDias;dia++){
+    const desl=isDiaDesbloqueado(dia),esHoy=dia===hoy;
+    if(!desl){
+      const el=document.createElement('div');el.className='dia-locked';
+      el.innerHTML=`<div><div class="locked-day">Día ${dia}</div><div class="locked-date">${getFecha(dia-1)}</div></div><div class="locked-icon">🔒</div>`;
+      c.appendChild(el);continue;
     }
-
-    const diaData = PREGUNTAS_V2[dia];
-    const nivelesDisp = CONFIG.nivelesDisponibles[dia];
-    const card = document.createElement('div');
-    card.className = `dia-card${esHoy ? ' hoy' : ''}`;
-
-    let nivelesHTML = `<div class="niveles-row">`;
-    nivelesDisp.forEach(nivel => {
-      const cfg = CONFIG.nivelesLabels[nivel];
-      const pts = progreso[dia]?.[nivel];
-      nivelesHTML += `
-        <button class="nivel-btn ${nivel}${pts!==undefined?' done':''}" onclick="irQuiz(${dia},'${nivel}')">
-          <span class="nb-e">${cfg.emoji}</span>
-          <span class="nb-l">${cfg.label}</span>
-          <span class="nb-s">${pts!==undefined ? '✅ '+pts+' pts' : 'Jugar'}</span>
-        </button>`;
+    const dd=PREGUNTAS_V2[dia],nd=CONFIG.nivelesDisponibles[dia];
+    const card=document.createElement('div');card.className=`dia-card${esHoy?' hoy':''}`;
+    let nh='<div class="niveles-row">';
+    nd.forEach(n=>{
+      const cfg=CONFIG.nivelesLabels[n],pts=progreso[dia]?.[n];
+      nh+=`<button class="nivel-btn ${n}${pts!==undefined?' done':''}" onclick="irQ(${dia},'${n}')">
+        <span class="nb-e">${cfg.emoji}</span>
+        <span class="nb-l">${cfg.label}</span>
+        <span class="nb-s">${pts!==undefined?'✅ '+pts+' pts':'Jugar'}</span>
+      </button>`;
     });
-    nivelesHTML += `</div>`;
-
-    card.innerHTML = `
+    nh+='</div>';
+    card.innerHTML=`
       <div class="dia-top">
-        <div class="dia-num">Día ${dia} · ${getFechaLabel(dia-1)}</div>
-        ${esHoy ? '<span class="hoy-badge">Hoy</span>' : ''}
+        <div class="dia-num">Día ${dia} · ${getFecha(dia-1)}</div>
+        ${esHoy?'<span class="hoy-badge">Hoy</span>':''}
       </div>
-      <div class="dia-titulo">${diaData.titulo}</div>
-      <div class="dia-sub">${diaData.subtitulo}</div>
-      ${nivelesHTML}`;
+      <div class="dia-titulo">${dd.titulo}</div>
+      <div class="dia-sub">${dd.subtitulo}</div>
+      ${nh}`;
     c.appendChild(card);
   }
 }
-
-function irQuiz(dia, nivel) {
-  sessionStorage.setItem('sw2_quiz', JSON.stringify({ dia, nivel }));
-  window.location.href = 'quiz.html';
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  initSupabase();
-  usuario = getUsuario();
-  if (!usuario) { window.location.href = 'index.html'; return; }
-  document.getElementById('userName').textContent = usuario.nombre;
-  await cargarProgreso();
-  renderDias();
+function irQ(dia,nivel){sessionStorage.setItem('sw2_quiz',JSON.stringify({dia,nivel}));window.location.href='quiz.html';}
+document.addEventListener('DOMContentLoaded',async()=>{
+  initSb();usuario=getU();if(!usuario){window.location.href='index.html';return;}
+  document.getElementById('userName').textContent=usuario.nombre;
+  await cargarProgreso();renderDias();
 });
 </script>
 </body>

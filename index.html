@@ -8,33 +8,29 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="css/design.css"/>
 <style>
-.login-card-wrap { margin-bottom:0; }
 .demo-link { text-align:center; margin-top:14px; }
 .already-name {
-  background:rgba(200,168,75,0.08); border:1.5px solid var(--gold-border);
+  background:var(--gold-dim); border:1.5px solid var(--gold-line);
   border-radius:var(--radius); padding:16px; text-align:center; margin-bottom:16px;
 }
-.already-name .an-label { font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-500); margin-bottom:5px; }
-.already-name .an-val { font-family:'Playfair Display',serif; font-size:22px; font-style:italic; }
+.already-name .an-label { font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px; }
+.already-name .an-val { font-family:'Playfair Display',serif;font-size:22px;font-style:italic; }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <!-- Brand -->
   <div class="brand-header fade-in">
     <div class="brand-eyebrow">South Wind</div>
-    <span class="brand-compass">🧭</span>
+    <div class="brand-logo" style="color:var(--cream);"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1.5"/><path d="M50 6 L55 44 L50 50 L45 44 Z" fill="currentColor"/><path d="M50 94 L55 56 L50 50 L45 56 Z" fill="currentColor" opacity="0.35"/><path d="M6 50 L44 45 L50 50 L44 55 Z" fill="currentColor" opacity="0.35"/><path d="M94 50 L56 45 L50 50 L56 55 Z" fill="currentColor" opacity="0.35"/><path d="M22 22 L46 46 L50 50 L44 44 Z" fill="currentColor" opacity="0.2"/><path d="M78 22 L54 46 L50 50 L56 44 Z" fill="currentColor" opacity="0.2"/><circle cx="50" cy="50" r="3.5" fill="currentColor"/><circle cx="50" cy="50" r="1.8" fill="#080e1a"/></svg></div>
     <h1 class="brand-title">La Ruta<br><em>del Salmón</em></h1>
     <p class="brand-subtitle">5 días · 3 niveles · ¿Cuánto sabes sobre el salmón que comes?</p>
   </div>
 
-  <div class="gold-rule fade-in-1"><span class="gold-rule-icon">✦</span></div>
+  <div class="gold-rule fade-in-1"><span class="gold-rule-dot"></span></div>
 
-  <!-- Card login -->
-  <div class="card card-gold fade-in-2" id="loginCard">
+  <div class="card card-accent fade-in-2" id="loginCard">
     <div class="card-label">Crea tu perfil para jugar</div>
-
     <div id="loginForm">
       <div class="input-group">
         <label for="inputNombre">Tu nombre</label>
@@ -48,15 +44,13 @@
       <button class="btn-primary" onclick="entrar()">Comenzar la ruta →</button>
       <div class="error-msg" id="errorMsg"></div>
     </div>
-
     <div class="demo-link">
       <button class="btn-ghost" onclick="entrarDemo()">Explorar sin guardar progreso</button>
     </div>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer fade-in-3">
-    <div class="footer-compass">🧭</div>
+    <div class="footer-logo" style="color:var(--cream);"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1.5"/><path d="M50 6 L55 44 L50 50 L45 44 Z" fill="currentColor"/><path d="M50 94 L55 56 L50 50 L45 56 Z" fill="currentColor" opacity="0.35"/><path d="M6 50 L44 45 L50 50 L44 55 Z" fill="currentColor" opacity="0.35"/><path d="M94 50 L56 45 L50 50 L56 55 Z" fill="currentColor" opacity="0.35"/><circle cx="50" cy="50" r="3.5" fill="currentColor"/><circle cx="50" cy="50" r="1.8" fill="#080e1a"/></svg></div>
     <div class="footer-brand">South Wind</div>
     <div class="footer-links">
       <a href="https://www.southwind.cl" target="_blank" rel="noopener">🌐 southwind.cl</a>
@@ -67,61 +61,39 @@
   </footer>
 
 </div>
-
 <script src="js/config.js"></script>
 <script>
 let sbClient;
-function initSupabase() {
-  if (window.supabase?.createClient)
-    sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
+function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
+function getU(){try{return JSON.parse(sessionStorage.getItem('sw2_usuario'));}catch{return null;}}
+function setU(u){sessionStorage.setItem('sw2_usuario',JSON.stringify(u));}
+function err(m){const e=document.getElementById('errorMsg');e.textContent=m;e.style.display='block';}
+function okEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+async function entrar(){
+  document.getElementById('errorMsg').style.display='none';
+  const n=document.getElementById('inputNombre').value.trim();
+  const e=document.getElementById('inputEmail').value.trim().toLowerCase();
+  if(!n){err('Ingresa tu nombre para aparecer en el ranking.');return;}
+  if(!okEmail(e)){err('Ingresa un email válido para guardar tu progreso.');return;}
+  const btn=document.querySelector('.btn-primary');btn.textContent='...';btn.disabled=true;
+  try{
+    const{error}=await sbClient.from('qrhunt2_participantes').upsert({email:e,nombre:n,updated_at:new Date().toISOString()},{onConflict:'email'});
+    if(error)throw error;
+    setU({email:e,nombre:n});window.location.href='home.html';
+  }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
 }
-function getUsuario() { try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; } }
-function setUsuario(u) { sessionStorage.setItem('sw2_usuario', JSON.stringify(u)); }
-function mostrarError(msg) { const el=document.getElementById('errorMsg'); el.textContent=msg; el.style.display='block'; }
-function ocultarError() { document.getElementById('errorMsg').style.display='none'; }
-function validarEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-async function entrar() {
-  ocultarError();
-  const nombre = document.getElementById('inputNombre').value.trim();
-  const email = document.getElementById('inputEmail').value.trim().toLowerCase();
-  if (!nombre) { mostrarError('Ingresa tu nombre para aparecer en el ranking.'); return; }
-  if (!validarEmail(email)) { mostrarError('Ingresa un email válido para guardar tu progreso.'); return; }
-  const btn = document.querySelector('.btn-primary');
-  btn.textContent = '...'; btn.disabled = true;
-  try {
-    const { error } = await sbClient.from('qrhunt2_participantes')
-      .upsert({ email, nombre, updated_at: new Date().toISOString() }, { onConflict: 'email' });
-    if (error) throw error;
-    setUsuario({ email, nombre });
-    window.location.href = 'home.html';
-  } catch(err) {
-    mostrarError('Error al conectar. Intenta de nuevo.');
-    btn.textContent = 'Comenzar la ruta →'; btn.disabled = false;
-  }
-}
-
-function entrarDemo() {
-  setUsuario({ email: CONFIG.emailDemo, nombre: 'Explorador' });
-  window.location.href = 'home.html';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initSupabase();
-  const u = getUsuario();
-  if (u) {
-    document.getElementById('loginCard').innerHTML = `
+function entrarDemo(){setU({email:CONFIG.emailDemo,nombre:'Explorador'});window.location.href='home.html';}
+document.addEventListener('DOMContentLoaded',()=>{
+  initSb();
+  const u=getU();
+  if(u){
+    document.getElementById('loginCard').innerHTML=`
       <div class="card-label">Ya tienes sesión activa</div>
-      <div class="already-name">
-        <div class="an-label">Jugando como</div>
-        <div class="an-val">${u.nombre}</div>
-      </div>
+      <div class="already-name"><div class="an-label">Jugando como</div><div class="an-val">${u.nombre}</div></div>
       <button class="btn-primary" onclick="window.location.href='home.html'">Continuar la ruta →</button>
       <button class="btn-secondary" onclick="sessionStorage.removeItem('sw2_usuario');location.reload()">Cambiar usuario</button>`;
   }
-  ['inputNombre','inputEmail'].forEach(id =>
-    document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') entrar(); })
-  );
+  ['inputNombre','inputEmail'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')entrar();}));
 });
 </script>
 </body>
