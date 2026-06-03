@@ -59,11 +59,12 @@
 </style>
 </head>
 <body>
-<div class="container">
+<div class="page-shell"><div class="container">
 
-  <div class="topbar fade-in">
-    <div class="topbar-brand">South Wind</div>
-      <span class="topbar-name">La Ruta del Salmón</span>
+    <div class="topbar fade-in">
+    <div class="topbar-brand-wrap">
+      <div class="topbar-label">South Wind</div>
+      <div class="topbar-title">La Ruta del Salmón</div>
     </div>
     <div class="topbar-right">
       <span class="user-chip" id="userName">...</span>
@@ -166,5 +167,5 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await cargarProgreso();renderDias();
 });
 </script>
-</body>
+</div></body>
 </html>

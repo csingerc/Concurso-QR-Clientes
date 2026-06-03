@@ -229,3 +229,86 @@ body::before {
   animation: spin 0.7s linear infinite; display: inline-block;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
+
+
+/* ── DESKTOP WRAPPER ── */
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+}
+.page-shell .container,
+.page-shell .container-wide {
+  width: 100%;
+}
+
+/* ── TOPBAR REDISEÑADO ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.topbar-brand-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.topbar-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+.topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.1;
+}
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.user-chip {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cream-dim);
+}
+.btn-salir {
+  background: none;
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  color: var(--cream-dim);
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  transition: border-color 0.2s;
+}
+.btn-salir:hover { border-color: rgba(240,236,228,0.25); }
+
+/* ── DESKTOP: centrar y limitar ancho ── */
+@media (min-width: 600px) {
+  .page-shell {
+    padding: 40px 24px;
+  }
+  .page-shell .container,
+  .page-shell .container-wide {
+    max-width: 520px;
+    padding: 0;
+  }
+  .niveles-row {
+    gap: 10px;
+  }
+  .nivel-btn {
+    padding: 12px 8px;
+  }
+  .nb-e { font-size: 20px; }
+  .nb-l { font-size: 11px; }
+}
