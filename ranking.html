@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>South Wind · Ranking</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080f1e;--surface:#0f1d35;--surface2:#162845;
+  --accent:#00c896;--accent2:#00a8ff;--text:#f0f4ff;
+  --text-muted:#6b85b0;--border:#1a3258;
+  --gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px 16px 60px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 40% at 50% -5%,rgba(0,200,150,0.09) 0%,transparent 55%);pointer-events:none;}
+.container{position:relative;z-index:1;max-width:520px;margin:0 auto;}
+
+/* Header */
+.page-header{text-align:center;margin-bottom:24px;}
+.live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.25);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--accent);text-transform:uppercase;margin-bottom:12px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.page-header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,8vw,44px);letter-spacing:-0.01em;}
+.page-meta{font-size:13px;color:var(--text-muted);margin-top:6px;}
+
+/* Tabs niveles */
+.tabs{display:flex;gap:8px;margin-bottom:20px;}
+.tab-btn{flex:1;border-radius:10px;padding:10px 6px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.05em;cursor:pointer;border:1.5px solid;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+.tab-btn.facil  {border-color:rgba(0,200,150,0.3);color:#00c896;background:rgba(0,200,150,0.05);}
+.tab-btn.medio  {border-color:rgba(245,158,11,0.3);color:#f59e0b;background:rgba(245,158,11,0.05);}
+.tab-btn.experto{border-color:rgba(139,92,246,0.3);color:#8b5cf6;background:rgba(139,92,246,0.05);}
+.tab-btn.active.facil  {background:rgba(0,200,150,0.15);border-color:var(--accent);}
+.tab-btn.active.medio  {background:rgba(245,158,11,0.15);border-color:#f59e0b;}
+.tab-btn.active.experto{background:rgba(139,92,246,0.15);border-color:#8b5cf6;}
+
+/* Podio */
+.podio{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:8px;align-items:end;margin-bottom:18px;}
+.podio-item{border-radius:14px;padding:14px 8px 12px;text-align:center;position:relative;}
+.podio-item.p1{background:linear-gradient(155deg,rgba(255,215,0,0.12),rgba(255,215,0,0.03));border:1.5px solid rgba(255,215,0,0.28);padding-top:22px;}
+.podio-item.p2{background:linear-gradient(155deg,rgba(192,192,192,0.1),rgba(192,192,192,0.03));border:1.5px solid rgba(192,192,192,0.2);}
+.podio-item.p3{background:linear-gradient(155deg,rgba(205,127,50,0.1),rgba(205,127,50,0.03));border:1.5px solid rgba(205,127,50,0.2);}
+.podio-crown{font-size:20px;margin-bottom:4px;}
+.podio-name{font-family:'Bebas Neue',sans-serif;font-size:14px;line-height:1.2;margin-bottom:4px;word-break:break-word;}
+.p1 .podio-name{color:var(--gold);font-size:16px;}
+.p2 .podio-name{color:var(--silver);}
+.p3 .podio-name{color:var(--bronze);}
+.podio-pts{font-family:'Bebas Neue',sans-serif;font-size:17px;}
+.p1 .podio-pts{font-size:22px;color:var(--gold);}
+.p2 .podio-pts{color:var(--silver);}
+.p3 .podio-pts{color:var(--bronze);}
+.podio-dias{font-size:10px;color:var(--text-muted);margin-top:2px;}
+
+/* Lista */
+.ranking-list{display:flex;flex-direction:column;gap:8px;}
+.rank-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px;}
+.rank-item.yo{border-color:var(--accent2);}
+.rank-pos{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text-muted);width:26px;text-align:center;flex-shrink:0;}
+.rank-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--accent);flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-detail{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.rank-score{text-align:right;flex-shrink:0;}
+.rank-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);}
+.rank-pts-label{font-size:10px;color:var(--text-muted);}
+
+.empty{text-align:center;padding:32px 0;color:var(--text-muted);font-size:14px;}
+.refresh-note{text-align:center;font-size:11px;color:var(--text-muted);margin-top:18px;}
+.btn-back{display:block;margin:16px auto 0;background:none;border:1px solid var(--border);border-radius:10px;color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:13px;padding:9px 20px;cursor:pointer;}
+
+.fade-in{animation:fadeIn 0.4s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.spinner{border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:18px;height:18px;animation:spin 0.7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="container fade-in">
+
+  <div class="page-header">
+    <div class="live-pill"><span class="live-dot"></span> En vivo</div>
+    <h1>Ranking 🏆</h1>
+    <div class="page-meta" id="pageMeta">Cargando...</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn facil active" onclick="setTab('facil')">🌱 Fácil</button>
+    <button class="tab-btn medio" onclick="setTab('medio')">🔥 Medio</button>
+    <button class="tab-btn experto" onclick="setTab('experto')">🧬 Experto</button>
+  </div>
+
+  <div class="podio" id="podio"></div>
+  <div class="ranking-list" id="rankingList"><div class="empty"><div class="spinner"></div></div></div>
+
+  <div class="refresh-note" id="refreshNote">Actualizando...</div>
+  <button class="btn-back" onclick="window.location.href='home.html'">← Volver</button>
+
+</div>
+
+<script src="js/config.js"></script>
+<script>
+let sbClient;
+let tabActual = 'facil';
+let emailUsuario = null;
+
+function initSupabase() {
+  if (window.supabase && window.supabase.createClient) {
+    sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
+  }
+}
+
+function setTab(nivel) {
+  tabActual = nivel;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.classList.contains(nivel));
+  });
+  cargarRanking();
+}
+
+function iniciales(nombre) {
+  return nombre.split(' ').slice(0,2).map(p=>p[0]?.toUpperCase()||'').join('');
+}
+
+async function cargarRanking() {
+  if (!sbClient) return;
+
+  try {
+    const { data, error } = await sbClient
+      .from('qrhunt2_progreso')
+      .select('email, puntaje, dia, qrhunt2_participantes(nombre)')
+      .eq('nivel', tabActual)
+      .order('puntaje', { ascending: false });
+
+    if (error) throw error;
+
+    // Agregar por email
+    const map = {};
+    (data || []).forEach(r => {
+      const nombre = r.qrhunt2_participantes?.nombre || 'Anónimo';
+      if (!map[r.email]) map[r.email] = { nombre, email: r.email, puntaje: 0, dias: 0 };
+      map[r.email].puntaje += r.puntaje;
+      map[r.email].dias++;
+    });
+
+    const lista = Object.values(map).sort((a,b) => b.puntaje - a.puntaje);
+
+    // Meta
+    document.getElementById('pageMeta').textContent =
+      `${lista.length} participantes · Nivel ${tabActual}`;
+    document.getElementById('refreshNote').textContent =
+      `Última actualización: ${new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · Auto-refresca cada 15s`;
+
+    renderPodio(lista.slice(0,3));
+    renderLista(lista.slice(3));
+
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+function renderPodio(top3) {
+  const podio = document.getElementById('podio');
+  if (!top3.length) { podio.innerHTML = ''; return; }
+
+  // Orden visual: 2-1-3
+  const order = [top3[1]||null, top3[0]||null, top3[2]||null];
+  const classes = ['p2','p1','p3'];
+  const crowns = ['🥈','🥇','🥉'];
+
+  podio.innerHTML = order.map((item, vi) => {
+    if (!item) return `<div class="podio-item ${classes[vi]}"></div>`;
+    const yo = item.email === emailUsuario;
+    return `
+      <div class="podio-item ${classes[vi]}">
+        <div class="podio-crown">${crowns[vi]}</div>
+        <div class="podio-name">${item.nombre}${yo?' 👈':''}</div>
+        <div class="podio-pts">${item.puntaje}</div>
+        <div class="podio-dias">${item.dias} día${item.dias!==1?'s':''}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderLista(items) {
+  const lista = document.getElementById('rankingList');
+  if (!items.length) { lista.innerHTML = ''; return; }
+
+  lista.innerHTML = items.map((item, i) => {
+    const pos = i + 4;
+    const yo = item.email === emailUsuario;
+    return `
+      <div class="rank-item${yo?' yo':''}">
+        <div class="rank-pos">${pos}°</div>
+        <div class="rank-avatar">${iniciales(item.nombre)}</div>
+        <div class="rank-info">
+          <div class="rank-name">${item.nombre}${yo?' 👈':''}</div>
+          <div class="rank-detail">${item.dias} día${item.dias!==1?'s':''} completados</div>
+        </div>
+        <div class="rank-score">
+          <div class="rank-pts">${item.puntaje}</div>
+          <div class="rank-pts-label">puntos</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSupabase();
+  try {
+    const u = JSON.parse(sessionStorage.getItem('sw2_usuario'));
+    emailUsuario = u?.email || null;
+  } catch {}
+  cargarRanking();
+  setInterval(cargarRanking, CONFIG.rankingRefreshMs);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>South Wind · Quiz</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080f1e;--surface:#0f1d35;--surface2:#162845;
+  --accent:#00c896;--accent2:#00a8ff;--text:#f0f4ff;
+  --text-muted:#6b85b0;--border:#1a3258;
+  --correct:#00c896;--wrong:#ff4757;--warn:#ff6b35;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 16px 60px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(0,200,150,0.07) 0%,transparent 60%);pointer-events:none;}
+.container{position:relative;z-index:1;max-width:480px;margin:0 auto;}
+
+/* Header */
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.back-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:12px;padding:6px 11px;cursor:pointer;font-family:'Barlow',sans-serif;}
+.nivel-pill{display:inline-flex;align-items:center;gap:5px;border-radius:100px;padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+.nivel-pill.facil  {background:rgba(0,200,150,0.1);color:#00c896;border:1px solid rgba(0,200,150,0.25);}
+.nivel-pill.medio  {background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);}
+.nivel-pill.experto{background:rgba(139,92,246,0.1);color:#8b5cf6;border:1px solid rgba(139,92,246,0.25);}
+
+/* Día info */
+.dia-info{margin-bottom:16px;}
+.dia-tag{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.dia-titulo{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1.1;}
+
+/* Tiempo es oro */
+.tiempo-oro{background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--warn);font-weight:600;margin-bottom:14px;}
+
+/* Cronómetro */
+.timer-wrap{margin-bottom:14px;}
+.timer-bar-bg{background:var(--surface2);border-radius:100px;height:5px;overflow:hidden;margin-bottom:5px;}
+.timer-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1s linear,background 0.5s;}
+.timer-bar-fill.warn{background:linear-gradient(90deg,#ff6b35,#ff4757);}
+.timer-row{display:flex;justify-content:space-between;align-items:center;}
+.timer-sec{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text-muted);}
+.timer-sec.warn{color:var(--warn);}
+.timer-mult{font-size:11px;color:var(--text-muted);}
+.timer-mult span{font-weight:700;}
+
+/* Indicador preguntas */
+.q-dots{display:flex;gap:6px;margin-bottom:14px;}
+.q-dot{flex:1;height:4px;border-radius:100px;background:var(--surface2);transition:background 0.3s;}
+.q-dot.active{background:var(--accent);}
+.q-dot.done{background:rgba(0,200,150,0.35);}
+
+/* Pregunta */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:12px;}
+.q-num{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.q-text{font-size:17px;font-weight:700;line-height:1.4;}
+
+/* Opciones */
+.options{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.opt-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;font-weight:500;padding:14px 16px;text-align:left;cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.1s;line-height:1.4;-webkit-tap-highlight-color:transparent;}
+.opt-btn:active:not(:disabled){transform:scale(0.98);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.correct{border-color:var(--correct);background:rgba(0,200,150,0.1);color:var(--correct);}
+.opt-btn.wrong{border-color:var(--wrong);background:rgba(255,71,87,0.1);color:var(--wrong);}
+.opt-btn.reveal{border-color:var(--correct);opacity:0.55;}
+
+/* Feedback */
+.feedback{display:none;border-radius:12px;padding:12px 15px;margin-bottom:12px;font-size:13px;line-height:1.5;}
+.feedback.correct{background:rgba(0,200,150,0.08);border:1px solid rgba(0,200,150,0.25);color:var(--correct);}
+.feedback.wrong{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.25);color:#ff7a85;}
+
+/* Botón siguiente */
+.btn-next{display:none;width:100%;background:linear-gradient(135deg,var(--accent),#00a878);border:none;border-radius:12px;color:#071520;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.04em;padding:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-next:active{opacity:0.85;}
+
+/* Resultado */
+.result-screen{display:none;text-align:center;padding:10px 0;}
+.result-emoji{font-size:60px;margin-bottom:10px;}
+.result-title{font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:6px;}
+.result-desc{color:var(--text-muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+
+.pts-box{background:linear-gradient(135deg,rgba(0,200,150,0.1),rgba(0,168,255,0.07));border:1px solid rgba(0,200,150,0.25);border-radius:16px;padding:20px;margin-bottom:18px;}
+.pts-box .pts-label{font-size:12px;color:var(--text-muted);margin-bottom:6px;letter-spacing:0.06em;text-transform:uppercase;}
+.pts-box .pts-value{font-family:'Bebas Neue',sans-serif;font-size:52px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.pts-box .pts-detail{font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.7;}
+
+/* Siguiente nivel */
+.next-nivel-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;text-align:left;}
+.next-nivel-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+.next-nivel-row{display:flex;align-items:center;justify-content:space-between;}
+.next-nivel-info .nt{font-size:16px;font-weight:700;}
+.next-nivel-info .ns{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.btn-next-nivel{background:linear-gradient(135deg,var(--accent),#00a878);border:none;border-radius:10px;color:#071520;font-family:'Bebas Neue',sans-serif;font-size:14px;padding:10px 18px;cursor:pointer;white-space:nowrap;}
+
+.btn-action{width:100%;background:none;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;padding:13px;cursor:pointer;margin-bottom:10px;-webkit-tap-highlight-color:transparent;}
+.btn-action:active{opacity:0.8;}
+
+.fade-in{animation:fadeIn 0.35s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="quiz-header fade-in">
+    <button class="back-btn" onclick="window.location.href='home.html'">← Volver</button>
+    <div class="nivel-pill" id="nivelPill">...</div>
+  </div>
+
+  <div class="dia-info fade-in">
+    <div class="dia-tag" id="diaTag">DÍA ·</div>
+    <div class="dia-titulo" id="diaTitulo">Cargando...</div>
+  </div>
+
+  <div class="tiempo-oro fade-in">
+    ⏱️ El tiempo es oro — responde rápido para más puntos
+  </div>
+
+  <div class="timer-wrap" id="timerWrap">
+    <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerBar" style="width:100%"></div></div>
+    <div class="timer-row">
+      <div class="timer-sec" id="timerSec">120s</div>
+      <div class="timer-mult">Multiplicador: <span id="timerMult">×1.00</span></div>
+    </div>
+  </div>
+
+  <div class="q-dots" id="qDots">
+    <div class="q-dot"></div><div class="q-dot"></div><div class="q-dot"></div>
+  </div>
+
+  <div id="questionZone" class="fade-in">
+    <div class="q-card">
+      <div class="q-num" id="qNum">Pregunta 1 de 3</div>
+      <div class="q-text" id="qText">Cargando...</div>
+    </div>
+    <div class="options" id="optionsList"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="btn-next" id="btnNext" onclick="siguiente()">Siguiente →</button>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎯</div>
+    <div class="result-title" id="resultTitle">¡Bien hecho!</div>
+    <div class="result-desc" id="resultDesc"></div>
+    <div class="pts-box">
+      <div class="pts-label">Puntos ganados</div>
+      <div class="pts-value" id="ptsValue">0</div>
+      <div class="pts-detail" id="ptsDetail"></div>
+    </div>
+    <div id="nextNivelCard"></div>
+    <button class="btn-action" onclick="window.location.href='ranking.html'">🏆 Ver ranking</button>
+    <button class="btn-action" onclick="window.location.href='home.html'">← Volver al inicio</button>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/preguntas.js"></script>
+<script>
+let sbClient;
+let usuario;
+let quizData;
+let preguntas = [];
+let preguntaIdx = 0;
+let correctasCount = 0;
+let tiempos = [];
+let timerInterval = null;
+let segundos = 0;
+
+function initSupabase() {
+  if (window.supabase && window.supabase.createClient) {
+    sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
+  }
+}
+function getUsuario() { try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; } }
+function esDemo() { return usuario?.email === CONFIG.emailDemo; }
+
+// ── INIT ──────────────────────────────────────────────────
+async function init() {
+  usuario = getUsuario();
+  if (!usuario) { window.location.href = 'index.html'; return; }
+
+  quizData = JSON.parse(sessionStorage.getItem('sw2_quiz') || 'null');
+  if (!quizData) { window.location.href = 'home.html'; return; }
+
+  const { dia, nivel } = quizData;
+  const diaData = PREGUNTAS_V2[dia];
+  const cfg = CONFIG.nivelesLabels[nivel];
+
+  preguntas = getPreguntasDia(dia, nivel);
+  if (!preguntas.length) { window.location.href = 'home.html'; return; }
+
+  // Header
+  document.getElementById('nivelPill').textContent = `${cfg.emoji} ${cfg.label}`;
+  document.getElementById('nivelPill').className = `nivel-pill ${nivel}`;
+  document.getElementById('diaTag').textContent = `DÍA ${dia}`;
+  document.getElementById('diaTitulo').textContent = diaData.titulo;
+
+  // Verificar si ya completó
+  if (!esDemo()) {
+    const { data } = await sbClient
+      .from('qrhunt2_progreso')
+      .select('puntaje, correctas')
+      .eq('email', usuario.email)
+      .eq('dia', dia)
+      .eq('nivel', nivel)
+      .maybeSingle();
+
+    if (data) {
+      mostrarYaCompletado(data.puntaje, data.correctas, dia, nivel);
+      return;
+    }
+  }
+
+  renderPregunta(0);
+}
+
+// ── CRONÓMETRO ────────────────────────────────────────────
+function iniciarTimer() {
+  segundos = 0;
+  clearInterval(timerInterval);
+  actualizarTimer();
+  timerInterval = setInterval(() => { segundos++; actualizarTimer(); }, 1000);
+}
+
+function detenerTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  return segundos;
+}
+
+function actualizarTimer() {
+  const max = CONFIG.tiempoMaxSegundos;
+  const rest = Math.max(0, max - segundos);
+  const pct = (rest / max) * 100;
+  const warn = rest < 30;
+  const factor = calcularMultiplicador(segundos);
+
+  document.getElementById('timerBar').style.width = pct + '%';
+  document.getElementById('timerBar').className = 'timer-bar-fill' + (warn ? ' warn' : '');
+  const sec = document.getElementById('timerSec');
+  sec.textContent = rest + 's';
+  sec.className = 'timer-sec' + (warn ? ' warn' : '');
+  document.getElementById('timerMult').textContent = '×' + factor.toFixed(2);
+}
+
+// ── RENDER PREGUNTA ───────────────────────────────────────
+function renderPregunta(idx) {
+  const q = preguntas[idx];
+
+  document.querySelectorAll('.q-dot').forEach((d, i) => {
+    d.className = 'q-dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+
+  document.getElementById('qNum').textContent = `Pregunta ${idx + 1} de ${preguntas.length}`;
+  document.getElementById('qText').textContent = q.pregunta;
+
+  document.getElementById('optionsList').innerHTML = q.opciones.map((op, i) =>
+    `<button class="opt-btn" onclick="seleccionar(${i})" id="opt-${i}">${op.texto}</button>`
+  ).join('');
+
+  document.getElementById('feedbackBox').style.display = 'none';
+  document.getElementById('btnNext').style.display = 'none';
+
+  const qz = document.getElementById('questionZone');
+  qz.classList.remove('fade-in'); void qz.offsetWidth; qz.classList.add('fade-in');
+
+  iniciarTimer();
+}
+
+function seleccionar(idx) {
+  const t = detenerTimer();
+  tiempos.push(t);
+
+  const q = preguntas[preguntaIdx];
+  const correcta = q.opciones[idx].correcta;
+
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  document.getElementById(`opt-${idx}`).classList.add(correcta ? 'correct' : 'wrong');
+
+  if (!correcta) {
+    q.opciones.forEach((op, i) => {
+      if (op.correcta) document.getElementById(`opt-${i}`).classList.add('reveal');
+    });
+  } else {
+    correctasCount++;
+  }
+
+  const fb = document.getElementById('feedbackBox');
+  fb.className = `feedback ${correcta ? 'correct' : 'wrong'}`;
+  fb.textContent = correcta ? q.feedbackCorrecto : q.feedbackIncorrecto;
+  fb.style.display = 'block';
+
+  const btn = document.getElementById('btnNext');
+  btn.style.display = 'block';
+  btn.textContent = preguntaIdx === preguntas.length - 1 ? 'Ver resultado →' : 'Siguiente pregunta →';
+}
+
+function siguiente() {
+  if (preguntaIdx === preguntas.length - 1) {
+    finalizarQuiz();
+  } else {
+    preguntaIdx++;
+    renderPregunta(preguntaIdx);
+  }
+}
+
+// ── FINALIZAR ─────────────────────────────────────────────
+async function finalizarQuiz() {
+  const { dia, nivel } = quizData;
+  const puntaje = calcularPuntajeFinal(correctasCount, nivel, tiempos);
+  const tProm = Math.round(tiempos.reduce((s,t)=>s+t,0)/tiempos.length);
+  const factorProm = tiempos.reduce((s,t)=>s+calcularMultiplicador(t),0)/tiempos.length;
+
+  // Ocultar zona de pregunta
+  ['questionZone','timerWrap','q-dots'].forEach(id => {
+    const el = document.getElementById(id) || document.querySelector('.'+id);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('qDots').style.display = 'none';
+  document.getElementById('timerWrap').style.display = 'none';
+  document.querySelector('.tiempo-oro').style.display = 'none';
+  document.getElementById('questionZone').style.display = 'none';
+
+  // Emojis y textos
+  const emojis = ['😅','🙂','🎯'];
+  const titulos = ['¡Seguimos aprendiendo!','¡Bien hecho!','¡Perfecto!'];
+  const descs = ['1 de 3 correctas.','2 de 3 correctas. ¡Muy bien!','¡3 de 3! Dominas el tema.'];
+  const ei = Math.max(0, correctasCount - 1);
+
+  document.getElementById('resultEmoji').textContent = emojis[ei];
+  document.getElementById('resultTitle').textContent = titulos[ei];
+  document.getElementById('resultDesc').textContent = descs[ei];
+  document.getElementById('ptsValue').textContent = `+${puntaje}`;
+  document.getElementById('ptsDetail').innerHTML =
+    `Base: ${CONFIG.puntos[correctasCount]||0} pts · Bonus nivel: +${CONFIG.bonusNivel[nivel]} pts<br>` +
+    `Tiempo promedio: ${tProm}s · Multiplicador: ×${factorProm.toFixed(2)}`;
+
+  // Guardar en Supabase
+  if (!esDemo() && sbClient) {
+    try {
+      await sbClient.from('qrhunt2_progreso').upsert({
+        email: usuario.email, dia, nivel,
+        correctas: correctasCount, puntaje,
+        tiempo_promedio: tProm,
+        completado_at: new Date().toISOString()
+      }, { onConflict: 'email,dia,nivel' });
+    } catch(err) { console.error(err); }
+  }
+
+  // ¿Hay siguiente nivel disponible?
+  const nivelesDisp = CONFIG.nivelesDisponibles[dia];
+  const idxActual = nivelesDisp.indexOf(nivel);
+  const siguienteNivel = nivelesDisp[idxActual + 1];
+
+  if (siguienteNivel) {
+    const cfg = CONFIG.nivelesLabels[siguienteNivel];
+    document.getElementById('nextNivelCard').innerHTML = `
+      <div class="next-nivel-card">
+        <div class="next-nivel-label">¿Quieres probar el siguiente nivel?</div>
+        <div class="next-nivel-row">
+          <div class="next-nivel-info">
+            <div class="nt">${cfg.emoji} ${cfg.label}</div>
+            <div class="ns">Más puntos, más difícil</div>
+          </div>
+          <button class="btn-next-nivel" onclick="irNivelSiguiente('${siguienteNivel}')">Jugar →</button>
+        </div>
+      </div>`;
+  }
+
+  const rs = document.getElementById('resultScreen');
+  rs.style.display = 'block';
+  rs.classList.add('fade-in');
+}
+
+function irNivelSiguiente(nivel) {
+  sessionStorage.setItem('sw2_quiz', JSON.stringify({ dia: quizData.dia, nivel }));
+  window.location.href = 'quiz.html';
+}
+
+function mostrarYaCompletado(puntaje, correctas, dia, nivel) {
+  document.getElementById('qDots').style.display = 'none';
+  document.getElementById('timerWrap').style.display = 'none';
+  document.querySelector('.tiempo-oro').style.display = 'none';
+  document.getElementById('questionZone').style.display = 'none';
+
+  const nivelesDisp = CONFIG.nivelesDisponibles[dia];
+  const idx = nivelesDisp.indexOf(nivel);
+  const sig = nivelesDisp[idx + 1];
+
+  let nextHTML = '';
+  if (sig) {
+    const cfg = CONFIG.nivelesLabels[sig];
+    nextHTML = `
+      <div class="next-nivel-card">
+        <div class="next-nivel-label">¿Ya probaste el siguiente nivel?</div>
+        <div class="next-nivel-row">
+          <div class="next-nivel-info">
+            <div class="nt">${cfg.emoji} ${cfg.label}</div>
+          </div>
+          <button class="btn-next-nivel" onclick="irNivelSiguiente('${sig}')">Jugar →</button>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('resultScreen').innerHTML = `
+    <div style="text-align:center;padding:20px 0;">
+      <div style="font-size:52px;margin-bottom:12px">✅</div>
+      <div class="result-title">Ya completaste este nivel</div>
+      <div class="result-desc" style="margin-top:8px;margin-bottom:20px">
+        Obtuviste ${puntaje} puntos con ${correctas} de 3 correctas.
+      </div>
+      ${nextHTML}
+      <button class="btn-action" onclick="window.location.href='home.html'">← Volver al inicio</button>
+    </div>`;
+  document.getElementById('resultScreen').style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSupabase();
+  init();
+});
+</script>
+</body>
+</html>
