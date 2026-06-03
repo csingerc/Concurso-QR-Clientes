@@ -65,9 +65,7 @@ body::before {
 }
 
 /* Logo SVG blanco centrado */
-.brand-logo {
-  display: flex; justify-content: center; margin-bottom: 16px;
-}
+
 .brand-logo svg { width: 52px; height: 52px; opacity: 0.9; }
 
 .brand-title {
@@ -197,7 +195,7 @@ body::before {
   border-top: 1px solid var(--border);
   margin-top: 32px;
 }
-.footer-logo { display: flex; justify-content: center; margin-bottom: 8px; }
+
 .footer-logo svg { width: 28px; height: 28px; opacity: 0.25; }
 .footer-brand {
   font-family: 'Playfair Display', serif; font-style: italic;
