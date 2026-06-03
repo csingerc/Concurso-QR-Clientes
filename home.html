@@ -3,224 +3,207 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>South Wind · Quiz</title>
+<title>La Ruta del Salmón · South Wind</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/design.css"/>
 <style>
-:root {
-  --bg:#080f1e; --surface:#0f1d35; --surface2:#162845;
-  --accent:#00c896; --accent2:#00a8ff; --text:#f0f4ff;
-  --text-muted:#6b85b0; --border:#1a3258; --radius:16px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px 16px 60px;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(0,200,150,0.09) 0%,transparent 60%);pointer-events:none;}
-.container{position:relative;z-index:1;max-width:480px;margin:0 auto;}
-
 /* Top bar */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.topbar-brand{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;color:var(--text-muted);}
-.topbar-user{display:flex;align-items:center;gap:8px;}
-.user-name{font-size:13px;font-weight:600;color:var(--text);}
-.btn-salir{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:12px;padding:5px 10px;cursor:pointer;font-family:'Barlow',sans-serif;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.topbar-brand{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--gold-500);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.user-chip{font-size:13px;font-weight:600;color:var(--cream);}
+.btn-salir{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Barlow',sans-serif;}
 
-/* Progreso global */
-.progress-hero{background:linear-gradient(135deg,#0d2040,#132f58);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:20px;}
-.progress-hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
-.ph-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
-.ph-pts{font-family:'Bebas Neue',sans-serif;font-size:42px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.ph-pts-label{font-size:12px;color:var(--text-muted);margin-top:2px;}
-.ranking-btn{background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.25);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap;}
+/* Hero puntaje */
+.pts-hero{background:linear-gradient(145deg,rgba(12,28,51,0.95),rgba(18,40,76,0.8));border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:22px;margin-bottom:22px;box-shadow:0 0 40px rgba(200,168,75,0.05);}
+.pts-hero-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.pts-label{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-500);margin-bottom:5px;}
+.pts-value{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;color:var(--gold-500);line-height:1;}
+.pts-sub{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.btn-ranking{background:rgba(200,168,75,0.1);border:1px solid var(--gold-border);border-radius:10px;color:var(--gold-500);font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:0.04em;white-space:nowrap;}
 
-/* Días grid */
-.dias-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+/* Sección días */
+.section-label{font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;}
 
-.dia-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;transition:border-color 0.2s;}
-.dia-card.bloqueado{opacity:0.45;}
-.dia-card.hoy{border-color:var(--accent);}
+/* Card día desbloqueado */
+.dia-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 18px 16px;margin-bottom:12px;backdrop-filter:blur(12px);}
+.dia-card.hoy{border-color:var(--gold-border);box-shadow:0 0 28px rgba(200,168,75,0.07);}
 
-.dia-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.dia-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.08em;color:var(--text-muted);}
-.dia-fecha{font-size:11px;color:var(--text-muted);}
-.dia-titulo{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.1;margin-bottom:3px;}
+.dia-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.dia-num{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);}
+.hoy-badge{background:var(--gold-500);color:var(--navy-900);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+
+.dia-titulo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1.15;margin-bottom:3px;}
 .dia-sub{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
 
-/* Niveles dentro de cada día */
-.niveles-row{display:flex;gap:8px;}
-.nivel-btn{flex:1;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;border:1.5px solid;font-family:'Barlow',sans-serif;transition:opacity 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent;}
+/* Niveles */
+.niveles-row{display:flex;gap:7px;}
+.nivel-btn{flex:1;border-radius:10px;padding:10px 5px;text-align:center;cursor:pointer;border:1.5px solid;font-family:'Barlow',sans-serif;transition:opacity 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent;}
 .nivel-btn:active{transform:scale(0.97);}
-.nivel-btn .nb-emoji{font-size:18px;display:block;margin-bottom:3px;}
-.nivel-btn .nb-label{font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
-.nivel-btn .nb-pts{font-size:10px;margin-top:2px;}
-.nivel-btn .nb-check{font-size:14px;margin-top:2px;}
+.nivel-btn .nb-e{font-size:17px;display:block;margin-bottom:2px;}
+.nivel-btn .nb-l{font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
+.nivel-btn .nb-s{font-size:10px;margin-top:2px;opacity:0.8;}
+.nivel-btn.facil  {background:rgba(0,180,120,0.07);border-color:rgba(0,180,120,0.25);color:#00c896;}
+.nivel-btn.medio  {background:rgba(200,168,75,0.07);border-color:rgba(200,168,75,0.25);color:var(--gold-500);}
+.nivel-btn.experto{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.25);color:#8b5cf6;}
+.nivel-btn.done{opacity:0.55;}
+.nivel-btn.done .nb-l{text-decoration:line-through;}
 
-.nivel-btn.facil   {background:rgba(0,200,150,0.08);border-color:rgba(0,200,150,0.3);color:#00c896;}
-.nivel-btn.medio   {background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);color:#f59e0b;}
-.nivel-btn.experto {background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.3);color:#8b5cf6;}
-
-.nivel-btn.completado{opacity:0.6;}
-.nivel-btn.completado .nb-label{text-decoration:line-through;}
-
-/* Bloqueado overlay */
-.bloqueado-msg{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:13px;font-weight:600;padding:4px 0;}
-
-/* HOY badge */
-.hoy-badge{background:var(--accent);color:#071520;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;}
-
-.fade-in{animation:fadeIn 0.4s ease forwards;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-.spinner{border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:18px;height:18px;animation:spin 0.7s linear infinite;display:inline-block;}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* Card día bloqueado — colapsada, genera misterio */
+.dia-locked{
+  border:1px dashed rgba(200,168,75,0.15);
+  border-radius:var(--radius-lg); padding:14px 18px;
+  margin-bottom:12px; display:flex; align-items:center;
+  justify-content:space-between; gap:12px;
+  background:rgba(7,16,30,0.4);
+}
+.locked-left .locked-day{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);}
+.locked-left .locked-date{font-size:12px;color:rgba(138,144,176,0.5);margin-top:2px;}
+.locked-icon{font-size:18px;opacity:0.25;}
 </style>
 </head>
 <body>
-<div class="container fade-in">
+<div class="container">
 
-  <div class="topbar">
-    <div class="topbar-brand">South Wind Quiz</div>
-    <div class="topbar-user">
-      <div class="user-name" id="userName">...</div>
+  <div class="topbar fade-in">
+    <div class="topbar-brand">La Ruta del Salmón</div>
+    <div class="topbar-right">
+      <div class="user-chip" id="userName">...</div>
       <button class="btn-salir" onclick="salir()">Salir</button>
     </div>
   </div>
 
-  <!-- Progreso global -->
-  <div class="progress-hero">
-    <div class="progress-hero-top">
+  <!-- Puntaje hero -->
+  <div class="pts-hero fade-in-1">
+    <div class="pts-hero-top">
       <div>
-        <div class="ph-label">Tu puntaje total</div>
-        <div class="ph-pts" id="ptsTotal">0</div>
-        <div class="ph-pts-label">puntos acumulados</div>
+        <div class="pts-label">Tu puntaje total</div>
+        <div class="pts-value" id="ptsTotal">0</div>
+        <div class="pts-sub">puntos acumulados</div>
       </div>
-      <button class="ranking-btn" onclick="window.location.href='ranking.html'">🏆 Ranking</button>
+      <button class="btn-ranking" onclick="window.location.href='ranking.html'">🏆 Ranking</button>
     </div>
   </div>
 
   <!-- Días -->
-  <div class="dias-label">Elige tu desafío de hoy</div>
-  <div id="diasContainer">
-    <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
-      <div class="spinner"></div>
-    </div>
+  <div class="section-label fade-in-2">Elige tu desafío</div>
+  <div id="diasContainer" class="fade-in-3">
+    <div style="text-align:center;padding:40px 0;"><div class="spinner"></div></div>
   </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-compass">🧭</div>
+    <div class="footer-brand">South Wind</div>
+    <div class="footer-links">
+      <a href="https://www.southwind.cl" target="_blank" rel="noopener">🌐 southwind.cl</a>
+      <span class="footer-sep">·</span>
+      <a href="https://www.instagram.com/southwindoficial/" target="_blank" rel="noopener">📸 @southwindoficial</a>
+    </div>
+    <div class="footer-copy">7 de junio · Día Mundial de la Inocuidad Alimentaria 🌍</div>
+  </footer>
 
 </div>
 
 <script src="js/config.js"></script>
 <script src="js/preguntas.js"></script>
 <script>
-let sbClient;
-let usuario;
-let progresoUsuario = {};
+let sbClient, usuario, progreso = {};
 
 function initSupabase() {
-  if (window.supabase && window.supabase.createClient) {
+  if (window.supabase?.createClient)
     sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
-  }
 }
+function getUsuario() { try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; } }
+function salir() { sessionStorage.removeItem('sw2_usuario'); window.location.href = 'index.html'; }
+function esDemo() { return usuario?.email === CONFIG.emailDemo; }
 
-function getUsuario() {
-  try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; }
-}
-
-function salir() {
-  sessionStorage.removeItem('sw2_usuario');
-  window.location.href = 'index.html';
-}
-
-function getFechaStr(offsetDias) {
-  const base = new Date(CONFIG.fechaDia1 + 'T12:00:00');
-  base.setDate(base.getDate() + offsetDias);
-  return base.toLocaleDateString('es-CL', { day:'numeric', month:'long' });
+function getFechaLabel(offsetDias) {
+  const d = new Date(CONFIG.fechaDia1 + 'T12:00:00');
+  d.setDate(d.getDate() + offsetDias);
+  return d.toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long' });
 }
 
 async function cargarProgreso() {
-  if (!sbClient || !usuario || esDemo()) return;
+  if (!sbClient || esDemo()) return;
   try {
-    const { data } = await sbClient
-      .from('qrhunt2_progreso')
-      .select('dia, nivel, puntaje, correctas')
-      .eq('email', usuario.email);
-
-    progresoUsuario = {};
+    const { data } = await sbClient.from('qrhunt2_progreso')
+      .select('dia, nivel, puntaje').eq('email', usuario.email);
     let total = 0;
-    (data || []).forEach(r => {
-      if (!progresoUsuario[r.dia]) progresoUsuario[r.dia] = {};
-      progresoUsuario[r.dia][r.nivel] = { puntaje: r.puntaje, correctas: r.correctas };
+    (data||[]).forEach(r => {
+      if (!progreso[r.dia]) progreso[r.dia] = {};
+      progreso[r.dia][r.nivel] = r.puntaje;
       total += r.puntaje;
     });
-
-    animarNumero('ptsTotal', 0, total, 600);
-  } catch(err) { console.error(err); }
+    animarNum('ptsTotal', 0, total, 600);
+  } catch(e) { console.error(e); }
 }
 
-function animarNumero(id, desde, hasta, dur) {
+function animarNum(id, desde, hasta, dur) {
   const el = document.getElementById(id);
   if (!el) return;
   const t0 = performance.now();
-  function step(t) {
-    const p = Math.min((t - t0) / dur, 1);
-    const ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(desde + (hasta - desde) * ease);
+  (function step(t) {
+    const p = Math.min((t-t0)/dur, 1), e = 1-Math.pow(1-p,3);
+    el.textContent = Math.round(desde + (hasta-desde)*e);
     if (p < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  })(t0);
 }
 
-function esDemo() { return usuario?.email === CONFIG.emailDemo; }
-
 function renderDias() {
-  const diaActual = getDiaActual();
-  const container = document.getElementById('diasContainer');
-  container.innerHTML = '';
+  const hoy = getDiaActual();
+  const c = document.getElementById('diasContainer');
+  c.innerHTML = '';
 
   for (let dia = 1; dia <= CONFIG.totalDias; dia++) {
     const desbloqueado = isDiaDesbloqueado(dia);
-    const esHoy = dia === diaActual;
-    const diaData = PREGUNTAS_V2[dia];
-    const nivelesDisp = CONFIG.nivelesDisponibles[dia];
+    const esHoy = dia === hoy;
 
-    const card = document.createElement('div');
-    card.className = `dia-card${!desbloqueado ? ' bloqueado' : ''}${esHoy ? ' hoy' : ''}`;
-
-    const fechaStr = getFechaStr(dia - 1);
-
-    let nivelesHTML = '';
-    if (desbloqueado) {
-      nivelesHTML = `<div class="niveles-row">`;
-      nivelesDisp.forEach(nivel => {
-        const cfg = CONFIG.nivelesLabels[nivel];
-        const completado = progresoUsuario[dia]?.[nivel];
-        nivelesHTML += `
-          <button class="nivel-btn ${nivel}${completado ? ' completado' : ''}"
-            onclick="irAQuiz(${dia}, '${nivel}')">
-            <span class="nb-emoji">${cfg.emoji}</span>
-            <span class="nb-label">${cfg.label}</span>
-            <span class="nb-pts">${completado ? '✅ ' + completado.puntaje + ' pts' : 'Jugar'}</span>
-          </button>`;
-      });
-      nivelesHTML += `</div>`;
-    } else {
-      nivelesHTML = `<div class="bloqueado-msg">🔒 Se desbloquea el ${getFechaStr(dia - 1)}</div>`;
+    if (!desbloqueado) {
+      // Card colapsada — solo día y fecha, genera misterio
+      const el = document.createElement('div');
+      el.className = 'dia-locked';
+      el.innerHTML = `
+        <div class="locked-left">
+          <div class="locked-day">Día ${dia}</div>
+          <div class="locked-date">${getFechaLabel(dia-1)}</div>
+        </div>
+        <div class="locked-icon">🔒</div>`;
+      c.appendChild(el);
+      continue;
     }
 
+    const diaData = PREGUNTAS_V2[dia];
+    const nivelesDisp = CONFIG.nivelesDisponibles[dia];
+    const card = document.createElement('div');
+    card.className = `dia-card${esHoy ? ' hoy' : ''}`;
+
+    let nivelesHTML = `<div class="niveles-row">`;
+    nivelesDisp.forEach(nivel => {
+      const cfg = CONFIG.nivelesLabels[nivel];
+      const pts = progreso[dia]?.[nivel];
+      nivelesHTML += `
+        <button class="nivel-btn ${nivel}${pts!==undefined?' done':''}" onclick="irQuiz(${dia},'${nivel}')">
+          <span class="nb-e">${cfg.emoji}</span>
+          <span class="nb-l">${cfg.label}</span>
+          <span class="nb-s">${pts!==undefined ? '✅ '+pts+' pts' : 'Jugar'}</span>
+        </button>`;
+    });
+    nivelesHTML += `</div>`;
+
     card.innerHTML = `
-      <div class="dia-header">
-        <div>
-          <div class="dia-num">DÍA ${dia} · ${fechaStr}</div>
-        </div>
-        ${esHoy ? '<span class="hoy-badge">HOY</span>' : ''}
+      <div class="dia-top">
+        <div class="dia-num">Día ${dia} · ${getFechaLabel(dia-1)}</div>
+        ${esHoy ? '<span class="hoy-badge">Hoy</span>' : ''}
       </div>
       <div class="dia-titulo">${diaData.titulo}</div>
       <div class="dia-sub">${diaData.subtitulo}</div>
-      ${nivelesHTML}
-    `;
-    container.appendChild(card);
+      ${nivelesHTML}`;
+    c.appendChild(card);
   }
 }
 
-function irAQuiz(dia, nivel) {
+function irQuiz(dia, nivel) {
   sessionStorage.setItem('sw2_quiz', JSON.stringify({ dia, nivel }));
   window.location.href = 'quiz.html';
 }
@@ -229,9 +212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSupabase();
   usuario = getUsuario();
   if (!usuario) { window.location.href = 'index.html'; return; }
-
   document.getElementById('userName').textContent = usuario.nombre;
-
   await cargarProgreso();
   renderDias();
 });
