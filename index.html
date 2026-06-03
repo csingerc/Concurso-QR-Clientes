@@ -76,9 +76,9 @@ async function entrar(){
   if(!okEmail(e)){err('Ingresa un email válido para guardar tu progreso.');return;}
   const btn=document.querySelector('.btn-primary');btn.textContent='...';btn.disabled=true;
   try{
-    const{error}=await sbClient.from('qrhunt2_participantes').upsert({email:e,nombre:n,updated_at:new Date().toISOString()},{onConflict:'email'});
+    const{data,error}=await sbClient.from('qrhunt2_participantes').upsert({email:e,nombre:n,updated_at:new Date().toISOString()},{onConflict:'email'}).select('id').single();
     if(error)throw error;
-    setU({email:e,nombre:n});window.location.href='home.html';
+    setU({email:e,nombre:n,id:data?.id});window.location.href='home.html';
   }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
 }
 function entrarDemo(){setU({email:CONFIG.emailDemo,nombre:'Explorador'});window.location.href='home.html';}

@@ -77,18 +77,22 @@
 </div>
 <script src="js/config.js"></script>
 <script>
-let sbClient,tab='facil',emailYo=null;
+let sbClient,tab='facil',idYo=null;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
 function setTab(n){tab=n;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.classList.contains(n)));cargar();}
 function inic(n){return n.split(' ').slice(0,2).map(p=>p[0]?.toUpperCase()||'').join('');}
 async function cargar(){
   if(!sbClient)return;
   try{
-    const{data,error}=await sbClient.from('qrhunt2_progreso').select('email,puntaje,dia,qrhunt2_participantes(nombre)').eq('nivel',tab);
+    const{data,error}=await sbClient.from('qrhunt2_progreso').select('puntaje,dia,qrhunt2_participantes(id,nombre)').eq('nivel',tab);
     if(error)throw error;
     const map={};
-    (data||[]).forEach(r=>{const nom=r.qrhunt2_participantes?.nombre||'Anónimo';if(!map[r.email])map[r.email]={nombre:nom,email:r.email,puntaje:0,dias:0};map[r.email].puntaje+=r.puntaje;map[r.email].dias++;});
+    (data||[]).forEach(r=>{const p=r.qrhunt2_participantes;if(!p)return;const id=p.id,nom=p.nombre||'Anónimo';if(!map[id])map[id]={id,nombre:nom,puntaje:0,dias:0};map[id].puntaje+=r.puntaje;map[id].dias++;});
     const lista=Object.values(map).sort((a,b)=>b.puntaje-a.puntaje);
+    // sufijo del id solo cuando dos participantes distintos comparten nombre
+    const cnt={};lista.forEach(it=>{cnt[it.nombre]=(cnt[it.nombre]||0)+1;});
+    lista.forEach(it=>{it.display=cnt[it.nombre]>1?it.nombre+' #'+String(it.id).replace(/-/g,'').slice(0,3):it.nombre;});
     document.getElementById('pageMeta').textContent=lista.length+' participantes · Nivel '+tab;
     document.getElementById('refreshNote').textContent='Actualizado: '+new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · refresca cada 15s';
     renderPodio(lista.slice(0,3));renderLista(lista.slice(3));
@@ -99,20 +103,20 @@ function renderPodio(t){
   const ord=[t[1]||null,t[0]||null,t[2]||null],cl=['p2','p1','p3'],cr=['🥈','🥇','🥉'];
   el.innerHTML=ord.map((it,vi)=>{
     if(!it)return'<div class="pi '+cl[vi]+'"></div>';
-    const yo=it.email===emailYo;
-    return'<div class="pi '+cl[vi]+'"><div class="pi-crown">'+cr[vi]+'</div><div class="pi-name">'+it.nombre+(yo?' 👈':'')+'</div><div class="pi-pts">'+it.puntaje+'</div><div class="pi-dias">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div>';
+    const yo=it.id===idYo;
+    return'<div class="pi '+cl[vi]+'"><div class="pi-crown">'+cr[vi]+'</div><div class="pi-name">'+esc(it.display)+(yo?' 👈':'')+'</div><div class="pi-pts">'+it.puntaje+'</div><div class="pi-dias">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div>';
   }).join('');
 }
 function renderLista(items){
   const el=document.getElementById('rlist');if(!items.length){el.innerHTML='';return;}
   el.innerHTML=items.map((it,i)=>{
-    const yo=it.email===emailYo;
-    return'<div class="ri'+(yo?' yo':'')+'"><div class="ri-pos">'+(i+4)+'°</div><div class="ri-av">'+inic(it.nombre)+'</div><div class="ri-info"><div class="ri-name">'+it.nombre+(yo?' 👈':'')+'</div><div class="ri-detail">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div><div class="ri-score"><div class="ri-pts">'+it.puntaje+'</div><div class="ri-ptsl">pts</div></div></div>';
+    const yo=it.id===idYo;
+    return'<div class="ri'+(yo?' yo':'')+'"><div class="ri-pos">'+(i+4)+'°</div><div class="ri-av">'+esc(inic(it.nombre))+'</div><div class="ri-info"><div class="ri-name">'+esc(it.display)+(yo?' 👈':'')+'</div><div class="ri-detail">'+it.dias+' día'+(it.dias!==1?'s':'')+'</div></div><div class="ri-score"><div class="ri-pts">'+it.puntaje+'</div><div class="ri-ptsl">pts</div></div></div>';
   }).join('');
 }
 document.addEventListener('DOMContentLoaded',()=>{
   initSb();
-  try{emailYo=JSON.parse(sessionStorage.getItem('sw2_usuario'))?.email||null;}catch{}
+  try{idYo=JSON.parse(sessionStorage.getItem('sw2_usuario'))?.id||null;}catch{}
   cargar();setInterval(cargar,CONFIG.rankingRefreshMs);
 });
 </script>
