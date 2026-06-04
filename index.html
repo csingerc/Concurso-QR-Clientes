@@ -43,9 +43,6 @@
       <button class="btn-primary" onclick="entrar()">Comenzar la ruta →</button>
       <div class="error-msg" id="errorMsg"></div>
     </div>
-    <div class="demo-link">
-      <button class="btn-ghost" onclick="entrarDemo()">Explorar sin guardar progreso</button>
-    </div>
   </div>
 
   <footer class="site-footer fade-in-3">
@@ -81,8 +78,7 @@ async function entrar(){
     if(error)throw error;
     setU({email:e,nombre:n,id:data});window.location.href='home.html';
   }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
-}
-function entrarDemo(){setU({email:CONFIG.emailDemo,nombre:'Explorador'});window.location.href='home.html';}
+});window.location.href='home.html';}
 document.addEventListener('DOMContentLoaded',()=>{
   initSb();
   const u=getU();
