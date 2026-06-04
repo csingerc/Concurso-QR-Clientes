@@ -21,9 +21,9 @@ const CONFIG = {
   niveles: ['facil', 'medio', 'experto'],
 
   nivelesLabels: {
-    facil:   { label: 'Fácil',   emoji: '🌱', color: '#00c896' },
-    medio:   { label: 'Medio',   emoji: '🔥', color: '#f59e0b' },
-    experto: { label: 'Experto', emoji: '🧬', color: '#8b5cf6' },
+    facil:   { label: 'Consumidor',     emoji: '🐟', color: '#00c896' },
+    medio:   { label: 'Especialista',   emoji: '🔬', color: '#f59e0b' },
+    experto: { label: 'Experto Técnico', emoji: '⚗️', color: '#8b5cf6' },
   },
 
   // Día 5 no tiene nivel fácil
@@ -31,8 +31,7 @@ const CONFIG = {
     1: ['facil', 'medio', 'experto'],
     2: ['facil', 'medio', 'experto'],
     3: ['facil', 'medio', 'experto'],
-    4: ['facil', 'medio', 'experto'],
-    5: ['medio', 'experto'],
+    4: ['medio', 'experto'],
   },
 
   // ── PUNTOS ───────────────────────────────────────────────
@@ -50,7 +49,7 @@ const CONFIG = {
   ],
 
   rankingRefreshMs: 15000,
-  totalDias: 5,
+  totalDias: 4,
 };
 
 // ── HELPERS ──────────────────────────────────────────────────

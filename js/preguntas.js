@@ -226,114 +226,6 @@ const PREGUNTAS_V2 = {
   // Tema: El proceso de ahumado y lo que implica
   // ════════════════════════════════════════════════════════
   3: {
-    titulo: 'Detrás del ahumado',
-    subtitulo: 'El proceso y lo que implica para ti',
-
-    facil: [
-      {
-        pregunta: "El salmón ahumado en frío, ¿está cocido?",
-        opciones: [
-          { texto: "Sí — el humo aplica suficiente calor para cocinarlo durante el proceso", correcta: false },
-          { texto: "No — el ahumado en frío no alcanza temperaturas de cocción, el salmón permanece crudo", correcta: true },
-          { texto: "Parcialmente — las capas externas sí se cocinan, el centro permanece crudo", correcta: false },
-        ],
-        feedbackCorrecto: "✅ El ahumado en frío es un proceso que no supera temperaturas de cocción — el salmón permanece crudo. Es un producto listo para comer donde la inocuidad depende del curado, la cadena de frío y el control del proceso.",
-        feedbackIncorrecto: "❌ El humo no cocina el producto. El perfil térmico del ahumado en frío es bajo y uniforme — no hay gradiente de cocción entre exterior e interior.",
-      },
-      {
-        pregunta: "¿Para qué sirve principalmente la sal en el proceso de ahumado del salmón?",
-        opciones: [
-          { texto: "Solo para dar sabor — es un ingrediente gustativo, no tecnológico", correcta: false },
-          { texto: "Para fijar el color rosado característico del salmón ahumado", correcta: false },
-          { texto: "Para extraer humedad del músculo dificultando que las bacterias sobrevivan, además de dar sabor", correcta: true },
-        ],
-        feedbackCorrecto: "✅ La sal extrae agua del músculo del salmón — menos agua disponible significa condiciones más difíciles para que las bacterias crezcan. Es una barrera de seguridad real, no solo un ingrediente de sabor.",
-        feedbackIncorrecto: "❌ La sal no fija el color — eso es función de los pigmentos naturales del salmón y los compuestos del humo. Su rol como barrera de seguridad es tan importante como su función gustativa.",
-      },
-      {
-        pregunta: "¿Por qué el salmón ahumado en caliente requiere más cuidados post-proceso que el ahumado en frío, si pasó por más calor?",
-        opciones: [
-          { texto: "Porque el calor ablanda la textura del músculo haciéndolo más permeable a bacterias del ambiente", correcta: false },
-          { texto: "Porque las altas temperaturas del proceso degradan los compuestos del humo que protegen el producto", correcta: false },
-          { texto: "Porque el calor elimina las bacterias que normalmente compiten con las más peligrosas, dejando el producto más vulnerable a recontaminación", correcta: true },
-        ],
-        feedbackCorrecto: "✅ El paso de eliminación térmica elimina microorganismos — incluyendo la flora que compite con L. monocytogenes. Sin esa competencia, si L. monocytogenes entra post-proceso, crece sin freno.",
-        feedbackIncorrecto: "❌ La textura del músculo no determina permeabilidad bacteriana. Los compuestos del humo no se degradan por el calor del proceso. El riesgo es una consecuencia paradójica del éxito del paso de eliminación.",
-      },
-    ],
-
-    medio: [
-      {
-        pregunta: "¿Qué tipo de madera se usa para ahumar salmón y por qué importa?",
-        opciones: [
-          { texto: "Cualquier madera seca sirve — lo que importa es la temperatura y el tiempo, no la especie", correcta: false },
-          { texto: "Maderas de hoja caduca como aliso, roble o cerezo — las coníferas contienen resinas que generan compuestos indeseados", correcta: true },
-          { texto: "Solo maderas certificadas orgánicamente — las tratadas con pesticidas transfieren residuos al salmón", correcta: false },
-        ],
-        feedbackCorrecto: "✅ Las coníferas contienen resinas que al quemarse generan terpenos y otros compuestos que dan sabores amargos e indeseados. Las maderas de hoja caduca producen humo con mejor perfil de fenoles, carbonilos y ácidos.",
-        feedbackIncorrecto: "❌ La especie de madera sí importa. La certificación orgánica de la madera no es un estándar de la industria del ahumado; el control es sobre la especie y el estado de la madera.",
-      },
-      {
-        pregunta: "El ahumado en frío dura típicamente entre 8 y 10 horas. ¿Qué determina principalmente ese tiempo?",
-        opciones: [
-          { texto: "El tiempo necesario para que el humo penetre hasta el centro del filete y lo conserve completamente", correcta: false },
-          { texto: "Regulaciones sanitarias que fijan tiempos mínimos de exposición al humo para garantizar inocuidad", correcta: false },
-          { texto: "El perfil de sabor y textura deseado, y el nivel de salado objetivo — no es un parámetro de inocuidad por sí solo", correcta: true },
-        ],
-        feedbackCorrecto: "✅ El tiempo de ahumado en frío es un parámetro de calidad organoléptica y tecnológica, no de inocuidad. La inocuidad depende del WPS, la temperatura post-proceso y la ausencia de recontaminación.",
-        feedbackIncorrecto: "❌ El humo no penetra hasta el centro del filete de forma homogénea. No existen regulaciones que fijen tiempos mínimos de ahumado como parámetro de inocuidad.",
-      },
-      {
-        pregunta: "Un productor artesanal afirma que su salmón ahumado en frío 'no necesita refrigeración gracias al proceso de ahumado tradicional'. ¿Es correcto?",
-        opciones: [
-          { texto: "Depende — si el proceso incluye curado salado intensivo previo, puede ser estable a temperatura ambiente", correcta: false },
-          { texto: "Podría ser correcto para consumo inmediato, pero no para almacenamiento prolongado", correcta: false },
-          { texto: "No — ningún proceso de ahumado en frío elimina la necesidad de refrigeración para un producto listo para comer de vida útil comercial", correcta: true },
-        ],
-        feedbackCorrecto: "✅ El ahumado en frío reduce pero no elimina la carga microbiana, y no aplica un paso de eliminación. La afirmación de estabilidad sin refrigeración no tiene respaldo técnico para salmón ahumado en frío con vida útil comercial.",
-        feedbackIncorrecto: "❌ Un curado salado intensivo puede bajar la actividad de agua, pero implica concentraciones de sal incompatibles con el perfil organoléptico del salmón ahumado comercial. L. monocytogenes puede estar presente desde el inicio.",
-      },
-    ],
-
-    experto: [
-      {
-        pregunta: "¿Cuáles son los principales grupos de compuestos del humo responsables del efecto antimicrobiano en salmón ahumado?",
-        opciones: [
-          { texto: "Terpenos y alcoholes alifáticos — presentes en mayor concentración en maderas de hoja caduca", correcta: false },
-          { texto: "Fenoles y ácidos orgánicos — actúan sobre membranas bacterianas y bajan el pH superficial del músculo", correcta: true },
-          { texto: "Carbonilos y lactonas — responsables del color y con actividad bacteriostática primaria", correcta: false },
-        ],
-        feedbackCorrecto: "✅ Los fenoles del humo (guaiacol, siringol y derivados) desnaturalizan proteínas de membrana bacteriana. Los ácidos orgánicos bajan el pH superficial del músculo. Los carbonilos contribuyen al color y sabor pero su efecto antimicrobiano es secundario.",
-        feedbackIncorrecto: "❌ Los terpenos son característicos de coníferas y generan compuestos indeseados. Los carbonilos tienen rol organoléptico primario pero efecto antimicrobiano marginal.",
-      },
-      {
-        pregunta: "Durante el ahumado en frío, si la temperatura del proceso supera los 30°C, ¿qué riesgo específico se genera?",
-        opciones: [
-          { texto: "Se activan esporas de C. botulinum tipo E que estaban latentes en el músculo, iniciando producción de toxina durante el proceso", correcta: false },
-          { texto: "Los compuestos fenólicos del humo se volatilizan, perdiendo su efecto antimicrobiano superficial", correcta: false },
-          { texto: "Se elimina flora competidora aerobia sin alcanzar temperatura letal para patógenos como L. monocytogenes y C. botulinum tipo E, creando condiciones favorables para su proliferación", correcta: true },
-        ],
-        feedbackCorrecto: "✅ Superar 30°C en ahumado en frío genera una zona gris: suficiente calor para suprimir flora competidora, insuficiente para un paso de eliminación real. L. monocytogenes y C. botulinum tipo E sobreviven pero sin competencia microbiana. (FDA Fish and Fishery Products Hazards and Controls Guidance)",
-        feedbackIncorrecto: "❌ C. botulinum tipo E no forma esporas que se 'activen' con calor moderado — el riesgo es de crecimiento vegetativo. Los fenoles no se volatilizan a 30°C. El mecanismo real es la eliminación selectiva de competidores sin paso de eliminación efectivo.",
-      },
-      {
-        pregunta: "En el contexto de tecnología de barreras aplicada al salmón ahumado en frío, ¿cuál es la limitación principal de depender del efecto antimicrobiano del humo como barrera?",
-        opciones: [
-          { texto: "Los compuestos del humo se degradan durante el almacenamiento refrigerado, reduciendo su efectividad a lo largo de la vida útil", correcta: false },
-          { texto: "La concentración de compuestos antimicrobianos del humo en músculo es altamente variable según especie de madera, densidad de humo, temperatura y tiempo — haciendo imposible su estandarización como parámetro de control cuantificable", correcta: true },
-          { texto: "El efecto antimicrobiano del humo es específico para bacterias gram-positivas, dejando sin control patógenos gram-negativos relevantes en salmón", correcta: false },
-        ],
-        feedbackCorrecto: "✅ A diferencia de WPS o temperatura — cuantificables y controlables con precisión — la concentración de fenoles en músculo depende de variables difíciles de estandarizar entre lotes. Los planes HACCP para salmón ahumado no usan concentración de fenoles como límite crítico — usan WPS y temperatura.",
-        feedbackIncorrecto: "❌ La degradación durante almacenamiento no es el problema principal — es la variabilidad en la deposición inicial. L. monocytogenes es gram-positiva, el grupo más afectado por fenoles. El problema no es la especificidad sino la inconsistencia del parámetro.",
-      },
-    ],
-  },
-
-  // ════════════════════════════════════════════════════════
-  // DÍA 4 — Lo que no se ve
-  // Tema: Listeria y por qué la controlamos
-  // ════════════════════════════════════════════════════════
-  4: {
     titulo: 'Lo que no se ve',
     subtitulo: 'Listeria y por qué la controlamos',
 
@@ -442,9 +334,9 @@ const PREGUNTAS_V2 = {
   // Tema: Sostenibilidad e inocuidad
   // Solo niveles: medio y experto
   // ════════════════════════════════════════════════════════
-  5: {
+  4: {
     titulo: 'Nivel Final',
-    subtitulo: 'Sostenibilidad e inocuidad · Día Mundial de la Inocuidad Alimentaria',
+    subtitulo: 'Sostenibilidad e inocuidad · 7 de junio, Día Mundial de la Inocuidad',
 
     facil: [], // Día 5 no tiene nivel fácil
 
