@@ -12,7 +12,7 @@ const CONFIG = {
   // ── FECHA DE LANZAMIENTO ─────────────────────────────────
   // Cambiar esta fecha para ajustar el calendario de desbloqueo
   // Formato: 'YYYY-MM-DD' en hora de Chile (America/Santiago)
-  fechaDia1: '2026-06-03',
+  fechaDia1: '2026-06-04',
 
   // ── MODO DEMO ────────────────────────────────────────────
   emailDemo: 'demo@southwind.cl',
@@ -21,9 +21,12 @@ const CONFIG = {
   niveles: ['facil', 'medio', 'experto'],
 
   nivelesLabels: {
-    facil:   { label: 'Consumidor',     emoji: '🐟', color: '#00c896' },
-    medio:   { label: 'Especialista',   emoji: '🔬', color: '#f59e0b' },
-    experto: { label: 'Experto Técnico', emoji: '⚗️', color: '#8b5cf6' },
+    facil:   { label: 'Consumidor',      emoji: '🐟', color: '#00c896',
+               frase: null },
+    medio:   { label: 'Especialista',    emoji: '🔬', color: '#f59e0b',
+               frase: '600 millones de personas se enferman por alimentos contaminados cada año. Este nivel es sobre cómo evitarlo.' },
+    experto: { label: 'Experto Técnico', emoji: '⚗️', color: '#8b5cf6',
+               frase: 'Lo que comes está lleno de ciencia. Tú no necesitas saberla — nosotros sí.' },
   },
 
   // Día 5 no tiene nivel fácil
@@ -40,7 +43,12 @@ const CONFIG = {
   bonusCompletarDia: 15, // bonus por completar los 3 niveles de un día
 
   // ── TIEMPO ───────────────────────────────────────────────
-  tiempoMaxSegundos: 120,
+  tiempoMaxSegundos: 120,  // default para facil y medio
+  tiempoMaxPorNivel: {
+    facil:   120,
+    medio:   120,
+    experto:  60,
+  },
   tiempoMultiplicador: [
     { hasta: 30,       factor: 1.0  },
     { hasta: 60,       factor: 0.85 },

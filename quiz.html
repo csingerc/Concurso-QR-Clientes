@@ -62,6 +62,7 @@
 .btn-nl{background:var(--gold);border:none;border-radius:10px;color:var(--bg);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;cursor:pointer;white-space:nowrap;}
 .btn-action{width:100%;background:none;border:1.5px solid var(--border-md);border-radius:var(--radius);color:var(--cream-dim);font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;padding:13px;cursor:pointer;margin-bottom:10px;-webkit-tap-highlight-color:transparent;transition:border-color 0.2s;}
 .btn-action:hover{border-color:rgba(240,236,228,0.2);}
+.nivel-frase{background:rgba(200,168,75,0.05);border-left:2px solid var(--gold);border-radius:0 var(--radius) var(--radius) 0;padding:10px 14px;font-size:13px;color:var(--cream-dim);line-height:1.5;margin-bottom:12px;font-style:italic;}
 </style>
 </head>
 <body>
@@ -75,6 +76,7 @@
     <div class="dia-titulo" id="diaTitulo">Cargando...</div>
   </div>
   <div class="tiempo-banner fade-in-1">⏱️ El tiempo es oro — responde rápido para más puntos</div>
+  <div class="nivel-frase fade-in-1" id="nivelFrase" style="display:none;"></div>
   <div class="timer-wrap" id="timerWrap">
     <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerBar" style="width:100%"></div></div>
     <div class="timer-row">
@@ -120,6 +122,9 @@ async function init(){
   if(!qd){window.location.href='home.html';return;}
   const{dia,nivel}=qd,dd=PREGUNTAS_V2[dia],cfg=CONFIG.nivelesLabels[nivel];
   pqs=getPreguntasDia(dia,nivel);if(!pqs.length){window.location.href='home.html';return;}
+  // Mostrar frase del nivel si existe
+  const frase=CONFIG.nivelesLabels[nivel]?.frase;
+  if(frase){const el=document.getElementById('nivelFrase');if(el){el.textContent=frase;el.style.display='block';}}
   document.getElementById('nivelPill').textContent=cfg.emoji+' '+cfg.label;
   document.getElementById('nivelPill').className='nivel-pill '+nivel;
   document.getElementById('diaTag').textContent='Día '+dia+' · '+dd.titulo;
@@ -134,7 +139,7 @@ async function init(){
 function startTmr(){seg=0;clearInterval(tmr);updTmr();tmr=setInterval(()=>{seg++;updTmr();},1000);}
 function stopTmr(){clearInterval(tmr);tmr=null;return seg;}
 function updTmr(){
-  const mx=CONFIG.tiempoMaxSegundos,r=Math.max(0,mx-seg),p=(r/mx)*100,w=r<30,f=calcularMultiplicador(seg);
+  const mx=CONFIG.tiempoMaxPorNivel[qd.nivel]||CONFIG.tiempoMaxSegundos,r=Math.max(0,mx-seg),p=(r/mx)*100,w=r<30,f=calcularMultiplicador(seg);
   document.getElementById('timerBar').style.width=p+'%';
   document.getElementById('timerBar').className='timer-bar-fill'+(w?' warn':'');
   const s=document.getElementById('timerSec');s.textContent=r+'s';s.className='timer-sec'+(w?' warn':'');
@@ -201,7 +206,7 @@ document.addEventListener('DOMContentLoaded',()=>{initSb();init();});
 </script>
 
   <footer class="site-footer">
-    <div class="footer-frase"><em>"Lo que comes está lleno de ciencia.<br>Tú no necesitas saberla — nosotros sí."</em></div>
+    <div class="footer-frase"><em>"Detrás de cada bocado, hay ciencia. Descúbrela."</em></div>
     <div class="footer-brand">South Wind</div>
     <div class="footer-links">
       <a href="https://www.southwind.cl" target="_blank" rel="noopener">🌐 southwind.cl</a>
