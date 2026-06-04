@@ -94,11 +94,11 @@ const PREGUNTAS_V2 = {
         pregunta: "La escala SalmoFan se usa para evaluar color en salmón de cultivo. ¿Cuál de estas afirmaciones es correcta?",
         opciones: [
           { texto: "Un valor SalmoFan alto correlaciona directamente con mayor concentración de EPA y DHA en músculo", correcta: false },
-          { texto: "El valor preferido varía por mercado — Europa prefiere 33-34, Japón tiende a valores más altos — y no refleja composición nutricional", correcta: true },
+          { texto: "El valor preferido varía según el mercado de destino y no refleja composición nutricional", correcta: true },
           { texto: "La astaxantina medida por SalmoFan proviene exclusivamente de fuentes naturales en salmón de cultivo", correcta: false },
         ],
-        feedbackCorrecto: "✅ SalmoFan (DSM) es escala colorimétrica de 20 a 34. Las preferencias de mercado varían significativamente. La pigmentación no correlaciona con omega-3 — esos se miden por análisis proximal. En cultivo la astaxantina puede ser de síntesis o de fuentes naturales como Haematococcus pluvialis.",
-        feedbackIncorrecto: "❌ Color ≠ omega-3. La astaxantina en cultivo puede ser sintética o natural. La correlación con EPA/DHA es inexistente — son metabolismos independientes.",
+        feedbackCorrecto: "✅ SalmoFan (DSM) es una escala colorimétrica de 20 a 34. Las preferencias varían por mercado de destino — lo que un comprador exige no es universal. La pigmentación no correlaciona con omega-3, que se mide por análisis proximal. En cultivo la astaxantina puede ser de síntesis o de fuentes naturales como Haematococcus pluvialis.",
+        feedbackIncorrecto: "❌ Color ≠ omega-3. La astaxantina en cultivo puede ser sintética o natural según el productor y el mercado. La correlación con EPA/DHA es inexistente — son metabolismos independientes.",
       },
       {
         pregunta: "En salmón ahumado en frío listo para consumo (RTE), ¿cuál es el efecto del vacío sobre el perfil de riesgo microbiológico del producto?",
