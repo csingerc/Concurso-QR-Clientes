@@ -1,6 +1,6 @@
 // ============================================================
 // BANCO DE PREGUNTAS — South Wind Quiz v2.0
-// 5 días × 3 niveles × 3 preguntas = 45 preguntas
+// 4 días × 3 niveles × 3 preguntas = 36 preguntas
 // ============================================================
 
 const PREGUNTAS_V2 = {
