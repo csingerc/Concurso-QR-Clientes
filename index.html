@@ -8,13 +8,17 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="css/design.css"/>
 <style>
-.demo-link { text-align:center; margin-top:14px; }
 .already-name {
   background:var(--gold-dim); border:1.5px solid var(--gold-line);
   border-radius:var(--radius); padding:16px; text-align:center; margin-bottom:16px;
 }
 .already-name .an-label { font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px; }
 .already-name .an-val { font-family:'Playfair Display',serif;font-size:22px;font-style:italic; }
+/* Paso 2 oculto por defecto */
+#paso2 { display:none; }
+.back-link { background:none;border:none;color:var(--cream-dim);font-size:12px;font-family:'Barlow',sans-serif;cursor:pointer;text-decoration:underline;padding:4px;margin-top:8px;display:block;text-align:center; }
+.email-display { background:var(--surface2);border:1px solid var(--border-md);border-radius:var(--radius);padding:11px 15px;font-size:14px;color:var(--cream-dim);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between; }
+.email-display span { font-weight:600;color:var(--cream); }
 </style>
 </head>
 <body>
@@ -29,24 +33,35 @@
   <div class="gold-rule fade-in-1"><span class="gold-rule-dot"></span></div>
 
   <div class="card card-accent fade-in-2" id="loginCard">
-    <div class="card-label">Crea tu perfil para jugar</div>
-    <div id="loginForm">
-      <div class="input-group">
-        <label for="inputNombre">Tu nombre</label>
-        <input type="text" id="inputNombre" placeholder="Como quieres aparecer en el ranking" maxlength="40" autocomplete="name"/>
-      </div>
+
+    <!-- PASO 1: solo email -->
+    <div id="paso1">
+      <div class="card-label">Ingresa tu email para jugar</div>
       <div class="input-group">
         <label for="inputEmail">Tu email</label>
         <input type="email" id="inputEmail" placeholder="para guardar tu progreso entre días" autocomplete="email"/>
         <div class="input-hint">Solo usamos tu email para guardar tu avance. No recibirás publicidad.</div>
       </div>
-      <button class="btn-primary" onclick="entrar()">Comenzar la ruta →</button>
-      <div class="error-msg" id="errorMsg"></div>
+      <button class="btn-primary" onclick="verificarEmail()">Continuar →</button>
+      <div class="error-msg" id="errorMsg1"></div>
     </div>
+
+    <!-- PASO 2: nombre (solo si es nuevo usuario) -->
+    <div id="paso2">
+      <div class="card-label">¿Cómo te llamamos?</div>
+      <div class="email-display">📧 <span id="emailConfirm"></span></div>
+      <div class="input-group">
+        <label for="inputNombre">Tu nombre</label>
+        <input type="text" id="inputNombre" placeholder="Como quieres aparecer en el ranking" maxlength="40" autocomplete="name"/>
+      </div>
+      <button class="btn-primary" onclick="registrar()">Comenzar la ruta →</button>
+      <div class="error-msg" id="errorMsg2"></div>
+      <button class="back-link" onclick="volverPaso1()">← Cambiar email</button>
+    </div>
+
   </div>
 
   <footer class="site-footer fade-in-3">
-    
     <div class="footer-frase"><em>"Detrás de cada bocado, hay ciencia. Descúbrela."</em></div>
     <div class="footer-brand">South Wind</div>
     <div class="footer-links">
@@ -60,36 +75,100 @@
 </div>
 <script src="js/config.js"></script>
 <script>
-let sbClient;
-function initSb(){if(window.supabase?.createClient)sbClient=window.supabase.createClient(CONFIG.supabase.url,CONFIG.supabase.anonKey);}
-function getU(){try{return JSON.parse(sessionStorage.getItem('sw2_usuario'));}catch{return null;}}
-function setU(u){sessionStorage.setItem('sw2_usuario',JSON.stringify(u));}
-function err(m){const e=document.getElementById('errorMsg');e.textContent=m;e.style.display='block';}
-function okEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
-async function entrar(){
-  document.getElementById('errorMsg').style.display='none';
-  const n=document.getElementById('inputNombre').value.trim();
-  const e=document.getElementById('inputEmail').value.trim().toLowerCase();
-  if(!n){err('Ingresa tu nombre para aparecer en el ranking.');return;}
-  if(!okEmail(e)){err('Ingresa un email válido para guardar tu progreso.');return;}
-  const btn=document.querySelector('.btn-primary');btn.textContent='...';btn.disabled=true;
-  try{
-    const{data,error}=await sbClient.rpc('qrhunt2_registrar',{p_email:e,p_nombre:n});
-    if(error)throw error;
-    setU({email:e,nombre:n,id:data});window.location.href='home.html';
-  }catch{err('Error al conectar. Intenta de nuevo.');btn.textContent='Comenzar la ruta →';btn.disabled=false;}
+let sbClient, emailActual = '';
+
+function initSb() {
+  if (window.supabase && window.supabase.createClient)
+    sbClient = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
 }
-document.addEventListener('DOMContentLoaded',()=>{
+function getU() { try { return JSON.parse(sessionStorage.getItem('sw2_usuario')); } catch { return null; } }
+function setU(u) { sessionStorage.setItem('sw2_usuario', JSON.stringify(u)); }
+function okEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+function hideErr(id) { document.getElementById(id).style.display = 'none'; }
+
+async function verificarEmail() {
+  hideErr('errorMsg1');
+  const email = document.getElementById('inputEmail').value.trim().toLowerCase();
+  if (!okEmail(email)) { showErr('errorMsg1', 'Ingresa un email válido.'); return; }
+
+  const btn = document.querySelector('#paso1 .btn-primary');
+  btn.textContent = '...'; btn.disabled = true;
+
+  try {
+    // Buscar si el email ya existe
+    const { data, error } = await sbClient.rpc('qrhunt2_buscar_email', { p_email: email });
+
+    if (error) throw error;
+
+    emailActual = email;
+
+    if (data && data.nombre) {
+      // Usuario existente — entrar directo
+      setU({ email, nombre: data.nombre });
+      window.location.href = 'home.html';
+    } else {
+      // Nuevo usuario — pedir nombre
+      document.getElementById('emailConfirm').textContent = email;
+      document.getElementById('paso1').style.display = 'none';
+      document.getElementById('paso2').style.display = 'block';
+      setTimeout(() => document.getElementById('inputNombre').focus(), 100);
+    }
+  } catch (e) {
+    showErr('errorMsg1', 'Error al conectar. Intenta de nuevo.');
+    btn.textContent = 'Continuar →'; btn.disabled = false;
+  }
+}
+
+async function registrar() {
+  hideErr('errorMsg2');
+  const nombre = document.getElementById('inputNombre').value.trim();
+  if (!nombre) { showErr('errorMsg2', 'Ingresa tu nombre para aparecer en el ranking.'); return; }
+
+  const btn = document.querySelector('#paso2 .btn-primary');
+  btn.textContent = '...'; btn.disabled = true;
+
+  try {
+    const { data, error } = await sbClient.rpc('qrhunt2_registrar', { p_email: emailActual, p_nombre: nombre });
+    if (error) throw error;
+    setU({ email: emailActual, nombre });
+    window.location.href = 'home.html';
+  } catch (e) {
+    showErr('errorMsg2', 'Error al conectar. Intenta de nuevo.');
+    btn.textContent = 'Comenzar la ruta →'; btn.disabled = false;
+  }
+}
+
+function volverPaso1() {
+  document.getElementById('paso2').style.display = 'none';
+  document.getElementById('paso1').style.display = 'block';
+  const btn = document.querySelector('#paso1 .btn-primary');
+  btn.textContent = 'Continuar →'; btn.disabled = false;
+  hideErr('errorMsg1');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
   initSb();
-  const u=getU();
-  if(u){
-    document.getElementById('loginCard').innerHTML=`
+
+  // Si ya tiene sesión activa
+  const u = getU();
+  if (u) {
+    document.getElementById('loginCard').innerHTML = `
       <div class="card-label">Ya tienes sesión activa</div>
-      <div class="already-name"><div class="an-label">Jugando como</div><div class="an-val">${u.nombre}</div></div>
+      <div class="already-name">
+        <div class="an-label">Jugando como</div>
+        <div class="an-val">${u.nombre}</div>
+      </div>
       <button class="btn-primary" onclick="window.location.href='home.html'">Continuar la ruta →</button>
       <button class="btn-secondary" onclick="sessionStorage.removeItem('sw2_usuario');location.reload()">Cambiar usuario</button>`;
   }
-  ['inputNombre','inputEmail'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')entrar();}));
+
+  document.getElementById('inputEmail')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') verificarEmail();
+  });
+  document.getElementById('inputNombre')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') registrar();
+  });
 });
 </script>
 </div></body>

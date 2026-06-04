@@ -58,3 +58,24 @@ CREATE POLICY "qrhunt2_p_update" ON qrhunt2_participantes FOR UPDATE USING (true
 
 CREATE POLICY "qrhunt2_pr_select" ON qrhunt2_progreso FOR SELECT USING (true);
 CREATE POLICY "qrhunt2_pr_insert" ON qrhunt2_progreso FOR INSERT WITH CHECK (true);
+
+-- ── RPC: buscar email existente ───────────────────────────
+-- Retorna {nombre} si existe, null si es nuevo
+CREATE OR REPLACE FUNCTION qrhunt2_buscar_email(p_email TEXT)
+RETURNS JSON
+LANGUAGE plpgsql SECURITY DEFINER
+AS $$
+DECLARE
+  v_nombre TEXT;
+BEGIN
+  SELECT nombre INTO v_nombre
+  FROM qrhunt2_participantes
+  WHERE email = lower(trim(p_email));
+
+  IF v_nombre IS NULL THEN
+    RETURN NULL;
+  ELSE
+    RETURN json_build_object('nombre', v_nombre);
+  END IF;
+END;
+$$;
